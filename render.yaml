@@ -1,8 +1,3 @@
-databases:
-  - name: ru-custos-db
-    databaseName: ru_custos
-    plan: free
-
 services:
   - type: web
     name: ru-custos-auth
@@ -16,15 +11,15 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: DB_HOST
-        fromDatabase: { name: ru-custos-db, property: host }
+        value: "ep-quiet-poetry-axtj7mb9-pooler.c-4.us-east-2.aws.neon.tech"
       - key: DB_PORT
-        fromDatabase: { name: ru-custos-db, property: port }
+        value: "5432"
       - key: DB_NAME
-        fromDatabase: { name: ru-custos-db, property: database }
+        value: "neondb"
       - key: DB_USER
-        fromDatabase: { name: ru-custos-db, property: user }
+        value: "neondb_owner"
       - key: DB_PASSWORD
-        fromDatabase: { name: ru-custos-db, property: password }
+        value: "npg_wBYSesE5u4At"
 
   - type: web
     name: ru-custos-contratos
@@ -38,15 +33,15 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: DB_HOST
-        fromDatabase: { name: ru-custos-db, property: host }
+        value: "ep-quiet-poetry-axtj7mb9-pooler.c-4.us-east-2.aws.neon.tech"
       - key: DB_PORT
-        fromDatabase: { name: ru-custos-db, property: port }
+        value: "5432"
       - key: DB_NAME
-        fromDatabase: { name: ru-custos-db, property: database }
+        value: "neondb"
       - key: DB_USER
-        fromDatabase: { name: ru-custos-db, property: user }
+        value: "neondb_owner"
       - key: DB_PASSWORD
-        fromDatabase: { name: ru-custos-db, property: password }
+        value: "npg_wBYSesE5u4At"
 
   - type: web
     name: ru-custos-pagamentos
@@ -60,15 +55,15 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: DB_HOST
-        fromDatabase: { name: ru-custos-db, property: host }
+        value: "ep-quiet-poetry-axtj7mb9-pooler.c-4.us-east-2.aws.neon.tech"
       - key: DB_PORT
-        fromDatabase: { name: ru-custos-db, property: port }
+        value: "5432"
       - key: DB_NAME
-        fromDatabase: { name: ru-custos-db, property: database }
+        value: "neondb"
       - key: DB_USER
-        fromDatabase: { name: ru-custos-db, property: user }
+        value: "neondb_owner"
       - key: DB_PASSWORD
-        fromDatabase: { name: ru-custos-db, property: password }
+        value: "npg_wBYSesE5u4At"
 
   - type: web
     name: ru-custos-previsoes
@@ -82,15 +77,15 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: DB_HOST
-        fromDatabase: { name: ru-custos-db, property: host }
+        value: "ep-quiet-poetry-axtj7mb9-pooler.c-4.us-east-2.aws.neon.tech"
       - key: DB_PORT
-        fromDatabase: { name: ru-custos-db, property: port }
+        value: "5432"
       - key: DB_NAME
-        fromDatabase: { name: ru-custos-db, property: database }
+        value: "neondb"
       - key: DB_USER
-        fromDatabase: { name: ru-custos-db, property: user }
+        value: "neondb_owner"
       - key: DB_PASSWORD
-        fromDatabase: { name: ru-custos-db, property: password }
+        value: "npg_wBYSesE5u4At"
 
   - type: web
     name: ru-custos-siop
@@ -104,15 +99,15 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: DB_HOST
-        fromDatabase: { name: ru-custos-db, property: host }
+        value: "ep-quiet-poetry-axtj7mb9-pooler.c-4.us-east-2.aws.neon.tech"
       - key: DB_PORT
-        fromDatabase: { name: ru-custos-db, property: port }
+        value: "5432"
       - key: DB_NAME
-        fromDatabase: { name: ru-custos-db, property: database }
+        value: "neondb"
       - key: DB_USER
-        fromDatabase: { name: ru-custos-db, property: user }
+        value: "neondb_owner"
       - key: DB_PASSWORD
-        fromDatabase: { name: ru-custos-db, property: password }
+        value: "npg_wBYSesE5u4At"
 
   - type: web
     name: ru-custos-saldo
@@ -126,15 +121,15 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: DB_HOST
-        fromDatabase: { name: ru-custos-db, property: host }
+        value: "ep-quiet-poetry-axtj7mb9-pooler.c-4.us-east-2.aws.neon.tech"
       - key: DB_PORT
-        fromDatabase: { name: ru-custos-db, property: port }
+        value: "5432"
       - key: DB_NAME
-        fromDatabase: { name: ru-custos-db, property: database }
+        value: "neondb"
       - key: DB_USER
-        fromDatabase: { name: ru-custos-db, property: user }
+        value: "neondb_owner"
       - key: DB_PASSWORD
-        fromDatabase: { name: ru-custos-db, property: password }
+        value: "npg_wBYSesE5u4At"
       - key: CONTRATOS_SERVICE_HOST
         fromService: { type: web, name: ru-custos-contratos, property: host }
       - key: PREVISOES_SERVICE_HOST

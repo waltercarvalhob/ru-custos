@@ -1,0 +1,189 @@
+databases:
+  - name: ru-custos-db
+    databaseName: ru_custos
+    plan: free
+
+envVarGroups:
+  - name: ru-custos-shared
+    envVars:
+      - key: JWT_SECRET
+        sync: false
+
+services:
+  - type: web
+    name: ru-custos-auth
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/auth-service/Dockerfile
+    dockerContext: ./backend/auth-service
+    envVarGroups:
+      - ru-custos-shared
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+      - key: DB_HOST
+        fromDatabase: { name: ru-custos-db, property: host }
+      - key: DB_PORT
+        fromDatabase: { name: ru-custos-db, property: port }
+      - key: DB_NAME
+        fromDatabase: { name: ru-custos-db, property: database }
+      - key: DB_USER
+        fromDatabase: { name: ru-custos-db, property: user }
+      - key: DB_PASSWORD
+        fromDatabase: { name: ru-custos-db, property: password }
+
+  - type: web
+    name: ru-custos-contratos
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/contratos-service/Dockerfile
+    dockerContext: ./backend/contratos-service
+    envVarGroups:
+      - ru-custos-shared
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+      - key: DB_HOST
+        fromDatabase: { name: ru-custos-db, property: host }
+      - key: DB_PORT
+        fromDatabase: { name: ru-custos-db, property: port }
+      - key: DB_NAME
+        fromDatabase: { name: ru-custos-db, property: database }
+      - key: DB_USER
+        fromDatabase: { name: ru-custos-db, property: user }
+      - key: DB_PASSWORD
+        fromDatabase: { name: ru-custos-db, property: password }
+
+  - type: web
+    name: ru-custos-pagamentos
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/pagamentos-service/Dockerfile
+    dockerContext: ./backend/pagamentos-service
+    envVarGroups:
+      - ru-custos-shared
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+      - key: DB_HOST
+        fromDatabase: { name: ru-custos-db, property: host }
+      - key: DB_PORT
+        fromDatabase: { name: ru-custos-db, property: port }
+      - key: DB_NAME
+        fromDatabase: { name: ru-custos-db, property: database }
+      - key: DB_USER
+        fromDatabase: { name: ru-custos-db, property: user }
+      - key: DB_PASSWORD
+        fromDatabase: { name: ru-custos-db, property: password }
+
+  - type: web
+    name: ru-custos-previsoes
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/previsoes-service/Dockerfile
+    dockerContext: ./backend/previsoes-service
+    envVarGroups:
+      - ru-custos-shared
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+      - key: DB_HOST
+        fromDatabase: { name: ru-custos-db, property: host }
+      - key: DB_PORT
+        fromDatabase: { name: ru-custos-db, property: port }
+      - key: DB_NAME
+        fromDatabase: { name: ru-custos-db, property: database }
+      - key: DB_USER
+        fromDatabase: { name: ru-custos-db, property: user }
+      - key: DB_PASSWORD
+        fromDatabase: { name: ru-custos-db, property: password }
+
+  - type: web
+    name: ru-custos-siop
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/siop-service/Dockerfile
+    dockerContext: ./backend/siop-service
+    envVarGroups:
+      - ru-custos-shared
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+      - key: DB_HOST
+        fromDatabase: { name: ru-custos-db, property: host }
+      - key: DB_PORT
+        fromDatabase: { name: ru-custos-db, property: port }
+      - key: DB_NAME
+        fromDatabase: { name: ru-custos-db, property: database }
+      - key: DB_USER
+        fromDatabase: { name: ru-custos-db, property: user }
+      - key: DB_PASSWORD
+        fromDatabase: { name: ru-custos-db, property: password }
+
+  - type: web
+    name: ru-custos-saldo
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/saldo-service/Dockerfile
+    dockerContext: ./backend/saldo-service
+    envVarGroups:
+      - ru-custos-shared
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+      - key: DB_HOST
+        fromDatabase: { name: ru-custos-db, property: host }
+      - key: DB_PORT
+        fromDatabase: { name: ru-custos-db, property: port }
+      - key: DB_NAME
+        fromDatabase: { name: ru-custos-db, property: database }
+      - key: DB_USER
+        fromDatabase: { name: ru-custos-db, property: user }
+      - key: DB_PASSWORD
+        fromDatabase: { name: ru-custos-db, property: password }
+      - key: CONTRATOS_SERVICE_HOST
+        fromService: { type: web, name: ru-custos-contratos, property: host }
+      - key: PREVISOES_SERVICE_HOST
+        fromService: { type: web, name: ru-custos-previsoes, property: host }
+      - key: SIOP_SERVICE_HOST
+        fromService: { type: web, name: ru-custos-siop, property: host }
+
+  - type: web
+    name: ru-custos-gateway
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/gateway/Dockerfile
+    dockerContext: ./backend/gateway
+    envVarGroups:
+      - ru-custos-shared
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+      - key: AUTH_SERVICE_HOST
+        fromService: { type: web, name: ru-custos-auth, property: host }
+      - key: CONTRATOS_SERVICE_HOST
+        fromService: { type: web, name: ru-custos-contratos, property: host }
+      - key: PAGAMENTOS_SERVICE_HOST
+        fromService: { type: web, name: ru-custos-pagamentos, property: host }
+      - key: PREVISOES_SERVICE_HOST
+        fromService: { type: web, name: ru-custos-previsoes, property: host }
+      - key: SIOP_SERVICE_HOST
+        fromService: { type: web, name: ru-custos-siop, property: host }
+      - key: SALDO_SERVICE_HOST
+        fromService: { type: web, name: ru-custos-saldo, property: host }
+
+  - type: web
+    name: ru-custos-frontend
+    runtime: static
+    buildCommand: >-
+      cd frontend && npm ci &&
+      printf 'export const environment = { production: true, apiBaseUrl: "https://%s/api" };' "$GATEWAY_HOST" > src/environments/environment.production.ts &&
+      npm run build
+    staticPublishPath: ./frontend/dist/frontend/browser
+    envVars:
+      - key: GATEWAY_HOST
+        fromService: { type: web, name: ru-custos-gateway, property: host }
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

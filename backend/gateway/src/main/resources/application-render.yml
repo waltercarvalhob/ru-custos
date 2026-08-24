@@ -1,0 +1,33 @@
+spring:
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: auth-service
+            uri: https://${AUTH_SERVICE_HOST}
+            predicates:
+              - Path=/api/auth/**
+          - id: contratos-service
+            uri: https://${CONTRATOS_SERVICE_HOST}
+            predicates:
+              - Path=/api/contratos/**
+          - id: pagamentos-service
+            uri: https://${PAGAMENTOS_SERVICE_HOST}
+            predicates:
+              - Path=/api/pagamentos/**
+          - id: previsoes-service
+            uri: https://${PREVISOES_SERVICE_HOST}
+            predicates:
+              - Path=/api/previsoes/**
+          - id: siop-service
+            uri: https://${SIOP_SERVICE_HOST}
+            predicates:
+              - Path=/api/siop/**
+          - id: saldo-service
+            uri: https://${SALDO_SERVICE_HOST}
+            predicates:
+              - Path=/api/saldo/**
+
+ru-custos:
+  jwt:
+    secret: ${JWT_SECRET}

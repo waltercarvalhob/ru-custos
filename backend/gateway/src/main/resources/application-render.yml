@@ -4,27 +4,27 @@ spring:
       mvc:
         routes:
           - id: auth-service
-            uri: https://${AUTH_SERVICE_HOST}
+            uri: https://${AUTH_SERVICE_HOST}.onrender.com
             predicates:
               - Path=/api/auth/**
           - id: contratos-service
-            uri: https://${CONTRATOS_SERVICE_HOST}
+            uri: https://${CONTRATOS_SERVICE_HOST}.onrender.com
             predicates:
               - Path=/api/contratos/**
           - id: pagamentos-service
-            uri: https://${PAGAMENTOS_SERVICE_HOST}
+            uri: https://${PAGAMENTOS_SERVICE_HOST}.onrender.com
             predicates:
               - Path=/api/pagamentos/**
           - id: previsoes-service
-            uri: https://${PREVISOES_SERVICE_HOST}
+            uri: https://${PREVISOES_SERVICE_HOST}.onrender.com
             predicates:
               - Path=/api/previsoes/**
           - id: siop-service
-            uri: https://${SIOP_SERVICE_HOST}
+            uri: https://${SIOP_SERVICE_HOST}.onrender.com
             predicates:
               - Path=/api/siop/**
           - id: saldo-service
-            uri: https://${SALDO_SERVICE_HOST}
+            uri: https://${SALDO_SERVICE_HOST}.onrender.com
             predicates:
               - Path=/api/saldo/**
 

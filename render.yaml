@@ -166,7 +166,7 @@ services:
     runtime: static
     buildCommand: >-
       cd frontend && npm ci &&
-      printf 'export const environment = { production: true, apiBaseUrl: "https://%s/api" };' "$GATEWAY_HOST" > src/environments/environment.production.ts &&
+      printf 'export const environment = { production: true, apiBaseUrl: "https://%s.onrender.com/api" };' "$GATEWAY_HOST" > src/environments/environment.production.ts &&
       npm run build
     staticPublishPath: ./frontend/dist/frontend/browser
     envVars:

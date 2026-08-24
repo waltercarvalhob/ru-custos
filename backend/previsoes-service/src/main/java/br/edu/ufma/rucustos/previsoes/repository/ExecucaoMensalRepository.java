@@ -1,0 +1,11 @@
+package br.edu.ufma.rucustos.previsoes.repository;
+
+import br.edu.ufma.rucustos.previsoes.model.ExecucaoMensal;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface ExecucaoMensalRepository extends JpaRepository<ExecucaoMensal, Long> {
+
+    List<ExecucaoMensal> findByContratoPrevisaoIdOrderByMesReferencia(Long contratoPrevisaoId);
+}

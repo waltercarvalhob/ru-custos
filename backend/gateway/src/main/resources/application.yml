@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: auth-service
+            uri: http://localhost:8081
+            predicates:
+              - Path=/api/auth/**
+          - id: contratos-service
+            uri: http://localhost:8082
+            predicates:
+              - Path=/api/contratos/**
+          - id: pagamentos-service
+            uri: http://localhost:8083
+            predicates:
+              - Path=/api/pagamentos/**
+          - id: previsoes-service
+            uri: http://localhost:8084
+            predicates:
+              - Path=/api/previsoes/**
+          - id: siop-service
+            uri: http://localhost:8085
+            predicates:
+              - Path=/api/siop/**
+          - id: saldo-service
+            uri: http://localhost:8086
+            predicates:
+              - Path=/api/saldo/**
+
+ru-custos:
+  jwt:
+    secret: troque-este-segredo-em-producao-precisa-ter-pelo-menos-32-bytes
+  rotas-publicas:
+    - /api/auth/login
+    - /api/auth/registrar

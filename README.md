@@ -121,9 +121,33 @@ num servidor de verdade. Existe um `docker-compose.yml` na raiz do projeto que s
 7 serviços Java + frontend) com um único comando, pensado para uma VM gratuita (ex: Oracle Cloud
 "Always Free").
 
-**Na VM** (Ubuntu, com Docker e Docker Compose instalados):
+### 0. Preparar a VM (Ubuntu na Oracle Cloud)
 
-1. Copie a pasta `RU-CUSTOS/` inteira para a VM (via `git clone` do seu repositório, ou `scp`/`rsync`).
+Instale o Docker (inclui o `docker compose`), conectado por SSH na VM:
+```
+sudo apt update
+sudo apt install -y ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo usermod -aG docker $USER
+```
+Depois do `usermod`, saia (`exit`) e conecte de novo por SSH para o grupo `docker` valer (evita precisar
+de `sudo` em todo comando docker).
+
+Copie o projeto da sua máquina Windows para a VM (rode isto no **PowerShell do Windows**, não na VM —
+troque `usuario` e `IP-DA-VM` pelos dados reais da sua instância):
+```
+scp -r C:\Walter\RU-CUSTOS usuario@IP-DA-VM:~/
+```
+(o Windows 10/11 já vem com cliente `scp`/`ssh` embutido; se pedir a chave `.pem` da Oracle Cloud, use
+`scp -i caminho\da\chave.pem -r C:\Walter\RU-CUSTOS usuario@IP-DA-VM:~/`).
+
+**Na VM** (depois de conectar por SSH, dentro da pasta `~/RU-CUSTOS`):
+
+1. Confirme que o projeto chegou certinho: `ls` deve mostrar `docker-compose.yml`, `backend/`, `frontend/`, etc.
 2. Crie o arquivo de segredos a partir do modelo:
    ```
    cp .env.example .env

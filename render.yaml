@@ -166,12 +166,33 @@ services:
     runtime: static
     buildCommand: >-
       cd frontend && npm ci &&
-      printf 'export const environment = { production: true, apiBaseUrl: "https://%s.onrender.com/api" };' "$GATEWAY_HOST" > src/environments/environment.production.ts &&
+      printf 'export const environment = {
+        production: true,
+        apiBaseUrl: "https://%s.onrender.com/api",
+        authBaseUrl: "https://%s.onrender.com/api/auth",
+        contratosBaseUrl: "https://%s.onrender.com/api/contratos",
+        pagamentosBaseUrl: "https://%s.onrender.com/api/pagamentos",
+        previsoesBaseUrl: "https://%s.onrender.com/api/previsoes",
+        siopBaseUrl: "https://%s.onrender.com/api/siop",
+        saldoBaseUrl: "https://%s.onrender.com/api/saldo"
+      };' "$GATEWAY_HOST" "$AUTH_HOST" "$CONTRATOS_HOST" "$PAGAMENTOS_HOST" "$PREVISOES_HOST" "$SIOP_HOST" "$SALDO_HOST" > src/environments/environment.production.ts &&
       npm run build
     staticPublishPath: ./frontend/dist/frontend/browser
     envVars:
       - key: GATEWAY_HOST
         fromService: { type: web, name: ru-custos-gateway, property: host }
+      - key: AUTH_HOST
+        fromService: { type: web, name: ru-custos-auth, property: host }
+      - key: CONTRATOS_HOST
+        fromService: { type: web, name: ru-custos-contratos, property: host }
+      - key: PAGAMENTOS_HOST
+        fromService: { type: web, name: ru-custos-pagamentos, property: host }
+      - key: PREVISOES_HOST
+        fromService: { type: web, name: ru-custos-previsoes, property: host }
+      - key: SIOP_HOST
+        fromService: { type: web, name: ru-custos-siop, property: host }
+      - key: SALDO_HOST
+        fromService: { type: web, name: ru-custos-saldo, property: host }
     routes:
       - type: rewrite
         source: /*

@@ -23,7 +23,7 @@ export interface Pagamento {
   ano?: number;
 }
 
-const BASE = `${environment.apiBaseUrl}/pagamentos`;
+const BASE = environment.pagamentosBaseUrl;
 
 @Injectable({ providedIn: 'root' })
 export class PagamentosService {

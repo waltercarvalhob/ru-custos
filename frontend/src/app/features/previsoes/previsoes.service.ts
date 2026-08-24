@@ -38,7 +38,7 @@ export interface ExecucaoMensal {
   valor: number;
 }
 
-const BASE = `${environment.apiBaseUrl}/previsoes`;
+const BASE = environment.previsoesBaseUrl;
 
 @Injectable({ providedIn: 'root' })
 export class PrevisoesService {

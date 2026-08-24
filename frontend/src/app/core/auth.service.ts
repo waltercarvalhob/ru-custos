@@ -25,7 +25,7 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   login(email: string, senha: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${environment.apiBaseUrl}/auth/login`, { email, senha }).pipe(
+    return this.http.post<LoginResponse>(`${environment.authBaseUrl}/login`, { email, senha }).pipe(
       tap((resposta) => {
         localStorage.setItem(CHAVE_TOKEN, resposta.token);
         localStorage.setItem(CHAVE_USUARIO, JSON.stringify(resposta.usuario));
@@ -35,7 +35,7 @@ export class AuthService {
   }
 
   registrar(nome: string, email: string, senha: string): Observable<Usuario> {
-    return this.http.post<Usuario>(`${environment.apiBaseUrl}/auth/registrar`, { nome, email, senha });
+    return this.http.post<Usuario>(`${environment.authBaseUrl}/registrar`, { nome, email, senha });
   }
 
   logout(): void {

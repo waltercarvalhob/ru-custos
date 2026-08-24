@@ -30,7 +30,7 @@ export interface Empenho {
   ano?: number;
 }
 
-const BASE = `${environment.apiBaseUrl}/contratos`;
+const BASE = environment.contratosBaseUrl;
 
 @Injectable({ providedIn: 'root' })
 export class ContratosService {

@@ -35,7 +35,7 @@ export interface AcaoOrcamentaria {
   atualizadoEm?: string;
 }
 
-const BASE = `${environment.apiBaseUrl}/siop`;
+const BASE = environment.siopBaseUrl;
 
 @Injectable({ providedIn: 'root' })
 export class SiopService {

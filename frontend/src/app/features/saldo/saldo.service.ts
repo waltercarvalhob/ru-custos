@@ -1,7 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { forkJoin, map, Observable } from 'rxjs';
+import { forkJoin, map, Observable, retry, timer } from 'rxjs';
 import { environment } from '../../../environments/environment';
+
+/**
+ * Servicos do Render (plano gratuito) hibernam apos periodos sem uso e podem levar dezenas de
+ * segundos para acordar no primeiro acesso - nesse intervalo respondem com erro (502/503) em vez
+ * de so demorar. Repete a chamada por ate ~1 minuto para dar tempo de acordar antes de desistir.
+ */
+const TENTATIVAS_AQUECIMENTO = 6;
+const INTERVALO_AQUECIMENTO_MS = 10000;
 
 export interface SaldoResumo {
   valorTotalContratos: number;
@@ -77,6 +85,7 @@ export class SaldoService {
       previsoes: this.http.get<PrevisoesResumoDto>(`${environment.previsoesBaseUrl}/resumo`),
       siop: this.http.get<SiopResumoDto>(`${environment.siopBaseUrl}/resumo`)
     }).pipe(
+      retry({ count: TENTATIVAS_AQUECIMENTO, delay: () => timer(INTERVALO_AQUECIMENTO_MS) }),
       map(({ contratos, previsoes, siop }) => {
         const saldoContrato = contratos.valorTotalContratos - previsoes.totalPrevistoAteFim;
         const saldoEmpenho = previsoes.totalEmpenhado - previsoes.totalPrevistoAteFim;

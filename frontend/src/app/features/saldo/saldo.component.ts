@@ -38,9 +38,12 @@ import { SaldoResumo, SaldoService } from './saldo.service';
         </div>
       </div>
     } @else if (erro()) {
-      <p class="erro">Não foi possível carregar o resumo. Verifique se todos os serviços estão no ar.</p>
+      <p class="erro">
+        Não foi possível carregar o resumo depois de várias tentativas. Recarregue a página em
+        alguns instantes — pode ser que os serviços estejam hibernando (plano gratuito do Render).
+      </p>
     } @else {
-      <p>Carregando...</p>
+      <p>Carregando... no primeiro acesso do dia isso pode levar até 1 minuto (os serviços precisam acordar).</p>
     }
   `,
   styles: [

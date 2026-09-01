@@ -21,7 +21,7 @@ import { AuthService } from '../../core/auth.service';
         <p class="hero__subtitulo">RECURSOS PNAES</p>
         <div class="hero__anos">
           <a class="btn-pilula btn-pilula--laranja" [routerLink]="destino()">2026</a>
-          <a class="btn-pilula btn-pilula--contorno" [routerLink]="destino()">2025</a>
+          <span class="btn-pilula btn-pilula--contorno btn-pilula--desabilitado" aria-disabled="true">2025</span>
         </div>
       </div>
     </div>
@@ -100,6 +100,16 @@ import { AuthService } from '../../core/auth.service';
       .hero__anos {
         display: flex;
         gap: 1rem;
+      }
+
+      .btn-pilula--desabilitado {
+        cursor: default;
+        opacity: 0.6;
+      }
+
+      .btn-pilula--desabilitado:hover {
+        transform: none;
+        box-shadow: none;
       }
     `
   ]

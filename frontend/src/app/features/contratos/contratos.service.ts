@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { retryAoAcordar } from '../../core/retry-cold-start';
 import { environment } from '../../../environments/environment';
 
 export interface Campus {
@@ -37,7 +38,7 @@ export class ContratosService {
   constructor(private http: HttpClient) {}
 
   listarCampus(): Observable<Campus[]> {
-    return this.http.get<Campus[]>(`${BASE}/campus`);
+    return this.http.get<Campus[]>(`${BASE}/campus`).pipe(retryAoAcordar());
   }
 
   criarCampus(campus: Campus): Observable<Campus> {
@@ -45,7 +46,7 @@ export class ContratosService {
   }
 
   listarContratos(): Observable<Contrato[]> {
-    return this.http.get<Contrato[]>(BASE);
+    return this.http.get<Contrato[]>(BASE).pipe(retryAoAcordar());
   }
 
   criarContrato(contrato: Contrato): Observable<Contrato> {
@@ -61,7 +62,7 @@ export class ContratosService {
   }
 
   listarEmpenhos(contratoId: number): Observable<Empenho[]> {
-    return this.http.get<Empenho[]>(`${BASE}/empenhos?contratoId=${contratoId}`);
+    return this.http.get<Empenho[]>(`${BASE}/empenhos?contratoId=${contratoId}`).pipe(retryAoAcordar());
   }
 
   criarEmpenho(empenho: Empenho): Observable<Empenho> {

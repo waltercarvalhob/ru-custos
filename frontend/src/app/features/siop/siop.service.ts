@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { retryAoAcordar } from '../../core/retry-cold-start';
 import { environment } from '../../../environments/environment';
 
 export interface PlanoOrcamentario {
@@ -42,7 +43,7 @@ export class SiopService {
   constructor(private http: HttpClient) {}
 
   listarPlanos(): Observable<PlanoOrcamentario[]> {
-    return this.http.get<PlanoOrcamentario[]>(`${BASE}/planos-orcamentarios`);
+    return this.http.get<PlanoOrcamentario[]>(`${BASE}/planos-orcamentarios`).pipe(retryAoAcordar());
   }
 
   criarPlano(plano: PlanoOrcamentario): Observable<PlanoOrcamentario> {
@@ -50,7 +51,7 @@ export class SiopService {
   }
 
   listarAcoes(): Observable<AcaoOrcamentaria[]> {
-    return this.http.get<AcaoOrcamentaria[]>(`${BASE}/acoes-orcamentarias`);
+    return this.http.get<AcaoOrcamentaria[]>(`${BASE}/acoes-orcamentarias`).pipe(retryAoAcordar());
   }
 
   criarAcao(acao: AcaoOrcamentaria): Observable<AcaoOrcamentaria> {

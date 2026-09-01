@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { retryAoAcordar } from '../../core/retry-cold-start';
 import { environment } from '../../../environments/environment';
 
 export interface ContratoPrevisao {
@@ -45,7 +46,7 @@ export class PrevisoesService {
   constructor(private http: HttpClient) {}
 
   listarContratos(): Observable<ContratoPrevisao[]> {
-    return this.http.get<ContratoPrevisao[]>(`${BASE}/contratos`);
+    return this.http.get<ContratoPrevisao[]>(`${BASE}/contratos`).pipe(retryAoAcordar());
   }
 
   criarContrato(contrato: ContratoPrevisao): Observable<ContratoPrevisao> {
@@ -53,11 +54,13 @@ export class PrevisoesService {
   }
 
   resumoContrato(id: number): Observable<ContratoPrevisaoResumo> {
-    return this.http.get<ContratoPrevisaoResumo>(`${BASE}/contratos/${id}/resumo`);
+    return this.http.get<ContratoPrevisaoResumo>(`${BASE}/contratos/${id}/resumo`).pipe(retryAoAcordar());
   }
 
   listarExecucoes(contratoPrevisaoId: number): Observable<ExecucaoMensal[]> {
-    return this.http.get<ExecucaoMensal[]>(`${BASE}/execucoes?contratoPrevisaoId=${contratoPrevisaoId}`);
+    return this.http
+      .get<ExecucaoMensal[]>(`${BASE}/execucoes?contratoPrevisaoId=${contratoPrevisaoId}`)
+      .pipe(retryAoAcordar());
   }
 
   criarExecucao(execucao: ExecucaoMensal): Observable<ExecucaoMensal> {

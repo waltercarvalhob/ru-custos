@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { retryAoAcordar } from '../../core/retry-cold-start';
 import { environment } from '../../../environments/environment';
 
 export interface Pagamento {
@@ -34,7 +35,7 @@ export class PagamentosService {
     if (filtros.campus) params = params.set('campus', filtros.campus);
     if (filtros.mesReferencia) params = params.set('mesReferencia', filtros.mesReferencia);
     if (filtros.numeroContrato) params = params.set('numeroContrato', filtros.numeroContrato);
-    return this.http.get<Pagamento[]>(BASE, { params });
+    return this.http.get<Pagamento[]>(BASE, { params }).pipe(retryAoAcordar());
   }
 
   criar(pagamento: Pagamento): Observable<Pagamento> {

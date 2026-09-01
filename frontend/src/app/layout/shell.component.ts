@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../core/auth.service';
 
 @Component({
@@ -124,10 +124,10 @@ import { AuthService } from '../core/auth.service';
   ]
 })
 export class ShellComponent {
-  constructor(public auth: AuthService, private router: Router) {}
+  constructor(public auth: AuthService) {}
 
   sair(): void {
     this.auth.logout();
-    this.router.navigate(['/login']);
+    window.location.href = 'https://ru-custos-frontend.onrender.com/';
   }
 }

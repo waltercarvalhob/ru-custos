@@ -15,11 +15,14 @@ import { AuthService } from '../../core/auth.service';
           <span class="marca__nome">PROAES · UFMA</span>
         </p>
         <h1 class="hero__titulo">
-          ANÁLISE<br />
-          <span class="hero__titulo--laranja">DE CUSTOS</span>
+          ANÁLISE FINANCEIRA<br />
+          E <span class="hero__titulo--laranja">ORÇAMENTÁRIA</span> - PROAES
         </h1>
-        <p class="hero__subtitulo">DO RESTAURANTE UNIVERSITÁRIO</p>
-        <a class="btn-pilula" [routerLink]="destino()">CONSULTAR</a>
+        <p class="hero__subtitulo">RECURSOS PNAES</p>
+        <div class="hero__anos">
+          <a class="btn-pilula btn-pilula--laranja" [routerLink]="destino()">2026</a>
+          <a class="btn-pilula btn-pilula--contorno" [routerLink]="destino()">2025</a>
+        </div>
       </div>
     </div>
   `,
@@ -93,6 +96,11 @@ import { AuthService } from '../../core/auth.service';
         font-weight: 600;
         margin-bottom: 2.5rem;
       }
+
+      .hero__anos {
+        display: flex;
+        gap: 1rem;
+      }
     `
   ]
 })
@@ -100,6 +108,6 @@ export class HomeComponent {
   constructor(private auth: AuthService) {}
 
   destino(): string {
-    return this.auth.estaAutenticado() ? '/saldo' : '/login';
+    return this.auth.estaAutenticado() ? '/inicio' : '/login';
   }
 }

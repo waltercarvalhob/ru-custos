@@ -98,7 +98,7 @@ export class LoginComponent {
     this.auth.login(this.email, this.senha).subscribe({
       next: () => {
         this.carregando = false;
-        this.router.navigate(['/saldo']);
+        this.router.navigate(['/inicio']);
       },
       error: (erro) => {
         this.carregando = false;

@@ -21,8 +21,22 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'inicio'
+      },
+      {
+        path: 'inicio',
+        loadComponent: () => import('./features/inicio/inicio.component').then((m) => m.InicioComponent)
+      },
+      {
         path: 'saldo',
         loadComponent: () => import('./features/saldo/saldo.component').then((m) => m.SaldoComponent)
+      },
+      {
+        path: 'remanejamentos',
+        loadComponent: () =>
+          import('./features/remanejamentos/remanejamentos.component').then((m) => m.RemanejamentosComponent)
       },
       {
         path: 'contratos',

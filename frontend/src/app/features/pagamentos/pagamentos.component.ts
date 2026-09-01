@@ -8,7 +8,7 @@ import { Pagamento, PagamentosService } from './pagamentos.service';
   standalone: true,
   imports: [CurrencyPipe, FormsModule],
   template: `
-    <h1>Pagamentos do RU</h1>
+    <h1>Controle Financeiro</h1>
     <p class="subtitulo">Lançamentos mensais por campus e contrato</p>
 
     <section class="cartao">

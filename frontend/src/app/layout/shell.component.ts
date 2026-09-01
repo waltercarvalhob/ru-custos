@@ -14,11 +14,13 @@ import { AuthService } from '../core/auth.service';
           <span class="marca__nome">PROAES · UFMA</span>
         </div>
         <nav class="barra__menu">
-          <a routerLink="/saldo" routerLinkActive="ativo" class="btn-pilula">SALDO</a>
-          <a routerLink="/pagamentos" routerLinkActive="ativo" class="btn-pilula">PAGAMENTO</a>
-          <a routerLink="/previsoes" routerLinkActive="ativo" class="btn-pilula">PREVISÕES</a>
+          <a routerLink="/inicio" routerLinkActive="ativo" class="btn-pilula">INÍCIO</a>
+          <a routerLink="/saldo" routerLinkActive="ativo" class="btn-pilula">RESUMO EXECUTIVO</a>
+          <a routerLink="/pagamentos" routerLinkActive="ativo" class="btn-pilula">CONTROLE FINANCEIRO</a>
+          <a routerLink="/previsoes" routerLinkActive="ativo" class="btn-pilula">CONTROLE ORÇAMENTÁRIO</a>
           <a routerLink="/contratos" routerLinkActive="ativo" class="btn-pilula">CONTRATOS</a>
           <a routerLink="/siop" routerLinkActive="ativo" class="btn-pilula">SIOP</a>
+          <a routerLink="/remanejamentos" routerLinkActive="ativo" class="btn-pilula">REMANEJAMENTOS</a>
         </nav>
         <div class="barra__rodape">
           <p class="usuario">{{ auth.usuarioAtual()?.nome }}</p>

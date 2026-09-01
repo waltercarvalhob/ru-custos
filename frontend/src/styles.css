@@ -70,6 +70,12 @@ button {
   color: var(--branco);
 }
 
+.btn-pilula--contorno {
+  background: transparent;
+  border: 2px solid var(--branco);
+  color: var(--branco);
+}
+
 .cartao {
   background: var(--branco);
   border-radius: var(--raio);

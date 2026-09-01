@@ -13,7 +13,7 @@ import {
   standalone: true,
   imports: [CurrencyPipe, FormsModule],
   template: `
-    <h1>Previsões de execução</h1>
+    <h1>Controle Orçamentário</h1>
     <p class="subtitulo">Execução mensal e previsão até o fim da vigência de cada contrato</p>
 
     <section class="cartao">

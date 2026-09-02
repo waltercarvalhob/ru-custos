@@ -15,8 +15,8 @@ import { AuthService } from '../../core/auth.service';
           <span class="marca__nome">PROAES · UFMA</span>
         </p>
         <h1 class="hero__titulo">
-          ANÁLISE FINANCEIRA<br />
-          E <span class="hero__titulo--laranja">ORÇAMENTÁRIA</span> - PROAES
+          ANÁLISE FINANCEIRA E<br />
+          <span class="hero__titulo--laranja">ORÇAMENTÁRIA</span> - PROAES
         </h1>
         <p class="hero__subtitulo">RECURSOS PNAES</p>
         <div class="hero__anos">
@@ -54,7 +54,7 @@ import { AuthService } from '../../core/auth.service';
 
       .hero__conteudo {
         position: relative;
-        max-width: 640px;
+        max-width: 760px;
       }
 
       .hero__marca {
@@ -81,9 +81,10 @@ import { AuthService } from '../../core/auth.service';
       }
 
       .hero__titulo {
-        font-size: clamp(2.5rem, 6vw, 4.5rem);
-        line-height: 1.05;
-        margin-bottom: 0.5rem;
+        font-size: clamp(2.25rem, 5vw, 3.75rem);
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+        margin-bottom: 1rem;
       }
 
       .hero__titulo--laranja {
@@ -91,9 +92,10 @@ import { AuthService } from '../../core/auth.service';
       }
 
       .hero__subtitulo {
-        color: var(--texto-claro);
-        letter-spacing: 0.06em;
-        font-weight: 600;
+        color: var(--branco);
+        letter-spacing: 0.08em;
+        font-weight: 800;
+        font-size: clamp(1.15rem, 2.4vw, 1.6rem);
         margin-bottom: 2.5rem;
       }
 

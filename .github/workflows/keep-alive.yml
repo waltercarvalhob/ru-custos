@@ -1,0 +1,36 @@
+name: Manter serviços do Render acordados
+
+# O plano gratuito do Render hiberna um serviço depois de ~15 minutos sem receber nenhuma
+# requisição. Quando alguém acessa o sistema nesse estado, o primeiro pedido tem que esperar o
+# serviço "acordar" (ate ~1 minuto). Este workflow faz um ping em cada serviço a cada 10 minutos
+# (menos que os 15 min de hibernação) para eles ficarem sempre no ar.
+#
+# Observação: workflows agendados do GitHub são desativados automaticamente depois de 60 dias sem
+# nenhum commit no repositório - se isso acontecer, é só abrir a aba "Actions" no GitHub e reativar.
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping em cada serviço (o status da resposta não importa, so precisa acordar o processo)
+        run: |
+          urls=(
+            "https://ru-custos-auth.onrender.com/"
+            "https://ru-custos-contratos.onrender.com/api/contratos/resumo"
+            "https://ru-custos-pagamentos.onrender.com/api/pagamentos"
+            "https://ru-custos-previsoes.onrender.com/api/previsoes/resumo"
+            "https://ru-custos-siop.onrender.com/api/siop/resumo"
+            "https://ru-custos-saldo.onrender.com/api/saldo/remanejamentos"
+          )
+          for url in "${urls[@]}"; do
+            echo "Ping: $url"
+            curl -s -o /dev/null -m 90 -w "  -> HTTP %{http_code} em %{time_total}s\n" "$url" \
+              || echo "  -> nao respondeu dentro do tempo limite"
+          done
+          # Nao falha o job por causa de um servico fora do ar - isso so serve de aviso nos logs.
+          exit 0

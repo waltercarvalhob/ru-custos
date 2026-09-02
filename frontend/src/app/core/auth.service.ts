@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
+import { retryAoAcordar } from './retry-cold-start';
 import { environment } from '../../environments/environment';
 
 export interface Usuario {
@@ -26,6 +27,7 @@ export class AuthService {
 
   login(email: string, senha: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${environment.authBaseUrl}/login`, { email, senha }).pipe(
+      retryAoAcordar(),
       tap((resposta) => {
         localStorage.setItem(CHAVE_TOKEN, resposta.token);
         localStorage.setItem(CHAVE_USUARIO, JSON.stringify(resposta.usuario));

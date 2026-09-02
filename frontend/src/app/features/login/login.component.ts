@@ -26,6 +26,11 @@ import { AuthService } from '../../core/auth.service';
         <button class="btn-pilula btn-pilula--laranja" type="submit" [disabled]="carregando">
           {{ carregando ? 'Entrando...' : 'Entrar' }}
         </button>
+        @if (carregando) {
+          <p class="aviso-espera">
+            No primeiro acesso do dia isso pode levar até 1 minuto (os serviços precisam acordar).
+          </p>
+        }
         <p class="link-registro">
           Não tem conta? <a routerLink="/registro">Cadastre-se</a>
         </p>
@@ -81,6 +86,13 @@ import { AuthService } from '../../core/auth.service';
         font-weight: 700;
         text-decoration: none;
       }
+
+      .aviso-espera {
+        margin-top: 0.75rem;
+        font-size: 0.8rem;
+        color: #7a6d6a;
+        text-align: center;
+      }
     `
   ]
 })
@@ -103,7 +115,8 @@ export class LoginComponent {
       error: (erro) => {
         this.carregando = false;
         if (erro.status === 0) {
-          this.mensagemErro = 'Não foi possível conectar ao servidor (gateway em localhost:8080). Verifique se os serviços estão no ar.';
+          this.mensagemErro =
+            'Não foi possível conectar ao servidor depois de várias tentativas. Recarregue a página em alguns instantes.';
         } else if (erro.status === 401) {
           this.mensagemErro = 'Email ou senha inválidos.';
         } else {

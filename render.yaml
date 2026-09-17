@@ -19,7 +19,7 @@ services:
       - key: DB_USER
         value: "neondb_owner"
       - key: DB_PASSWORD
-        value: "npg_wBYSesE5u4At"
+        sync: false
 
   - type: web
     name: ru-custos-contratos
@@ -41,7 +41,7 @@ services:
       - key: DB_USER
         value: "neondb_owner"
       - key: DB_PASSWORD
-        value: "npg_wBYSesE5u4At"
+        sync: false
 
   - type: web
     name: ru-custos-pagamentos
@@ -63,7 +63,7 @@ services:
       - key: DB_USER
         value: "neondb_owner"
       - key: DB_PASSWORD
-        value: "npg_wBYSesE5u4At"
+        sync: false
 
   - type: web
     name: ru-custos-previsoes
@@ -85,7 +85,7 @@ services:
       - key: DB_USER
         value: "neondb_owner"
       - key: DB_PASSWORD
-        value: "npg_wBYSesE5u4At"
+        sync: false
 
   - type: web
     name: ru-custos-siop
@@ -107,7 +107,7 @@ services:
       - key: DB_USER
         value: "neondb_owner"
       - key: DB_PASSWORD
-        value: "npg_wBYSesE5u4At"
+        sync: false
 
   - type: web
     name: ru-custos-saldo
@@ -129,7 +129,7 @@ services:
       - key: DB_USER
         value: "neondb_owner"
       - key: DB_PASSWORD
-        value: "npg_wBYSesE5u4At"
+        sync: false
       - key: CONTRATOS_SERVICE_HOST
         fromService: { type: web, name: ru-custos-contratos, property: host }
       - key: PREVISOES_SERVICE_HOST

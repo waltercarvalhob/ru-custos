@@ -36,16 +36,16 @@ import {
           <input type="date" name="vigenciaFim" [(ngModel)]="novo.vigenciaFim" />
         </div>
         <div class="campo">
+          <label>Nº NE</label>
+          <input name="numeroNe" [(ngModel)]="novo.numeroNe" />
+        </div>
+        <div class="campo">
           <label>Valor do contrato</label>
           <input type="number" name="valorContrato" [(ngModel)]="novo.valorContrato" required />
         </div>
         <div class="campo">
-          <label>Empenhado</label>
+          <label>Valor Empenhado</label>
           <input type="number" name="empenhado" [(ngModel)]="novo.empenhado" required />
-        </div>
-        <div class="campo">
-          <label>Nº NE</label>
-          <input name="numeroNe" [(ngModel)]="novo.numeroNe" />
         </div>
         <div class="campo campo-checkbox">
           <label>
@@ -65,7 +65,7 @@ import {
             <th>Contrato</th>
             <th>Vigência fim</th>
             <th>Valor contrato</th>
-            <th>Empenhado</th>
+            <th>Valor Empenhado</th>
             <th>Sobra aproveitável</th>
             <th></th>
           </tr>

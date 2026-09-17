@@ -16,11 +16,17 @@ import { AuthService } from '../core/auth.service';
         <nav class="barra__menu">
           <a routerLink="/inicio" routerLinkActive="ativo" class="btn-pilula">INÍCIO</a>
           <a routerLink="/saldo" routerLinkActive="ativo" class="btn-pilula">RESUMO EXECUTIVO</a>
-          <a routerLink="/pagamentos" routerLinkActive="ativo" class="btn-pilula">CONTROLE FINANCEIRO</a>
+          <a routerLink="/pagamentos" routerLinkActive="ativo" class="btn-pilula">CONTROLE FINANCEIRO RU</a>
           <a routerLink="/previsoes" routerLinkActive="ativo" class="btn-pilula">CONTROLE ORÇAMENTÁRIO</a>
-          <a routerLink="/contratos" routerLinkActive="ativo" class="btn-pilula">CONTRATOS</a>
+          <a routerLink="/contratos" routerLinkActive="ativo" class="btn-pilula">CONTRATO RESTAURANTE</a>
           <a routerLink="/siop" routerLinkActive="ativo" class="btn-pilula">SIOP</a>
-          <a routerLink="/remanejamentos" routerLinkActive="ativo" class="btn-pilula">REMANEJAMENTOS</a>
+          <a routerLink="/remanejamentos" routerLinkActive="ativo" class="btn-pilula">REMANEJAMENTOS REALIZADOS RU</a>
+          <a routerLink="/financeiro-bolsas-auxilios" routerLinkActive="ativo" class="btn-pilula">
+            CONTROLE FINANCEIRO BOLSAS E AUXÍLIOS
+          </a>
+          <a routerLink="/remanejamentos-bolsas-auxilios" routerLinkActive="ativo" class="btn-pilula">
+            REMANEJAMENTOS REALIZADOS BOLSAS E AUXÍLIOS
+          </a>
         </nav>
         <div class="barra__rodape">
           <p class="usuario">{{ auth.usuarioAtual()?.nome }}</p>

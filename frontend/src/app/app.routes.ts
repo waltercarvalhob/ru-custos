@@ -53,6 +53,16 @@ export const routes: Routes = [
       {
         path: 'siop',
         loadComponent: () => import('./features/siop/siop.component').then((m) => m.SiopComponent)
+      },
+      {
+        path: 'financeiro-bolsas-auxilios',
+        loadComponent: () => import('./features/em-breve/em-breve.component').then((m) => m.EmBreveComponent),
+        data: { titulo: 'Controle Financeiro Bolsas e Auxílios' }
+      },
+      {
+        path: 'remanejamentos-bolsas-auxilios',
+        loadComponent: () => import('./features/em-breve/em-breve.component').then((m) => m.EmBreveComponent),
+        data: { titulo: 'Remanejamentos Realizados Bolsas e Auxílios' }
       }
     ]
   },

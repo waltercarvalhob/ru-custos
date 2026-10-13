@@ -1,0 +1,28 @@
+# Complemento do docker-compose.yml para o servidor de producao (VM da Oracle Cloud).
+# Uso:  docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Coloca o Caddy na frente do nginx do frontend para servir HTTPS com certificado gratuito do
+# Let's Encrypt (renovado sozinho). O endereco publico vem da variavel DOMAIN do .env.
+services:
+  frontend:
+    # A porta 80 do servidor passa a ser do Caddy; o frontend so e acessado pela rede interna.
+    ports: !reset []
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+
+volumes:
+  caddy_data:
+  caddy_config:

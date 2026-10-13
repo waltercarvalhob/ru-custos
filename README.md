@@ -113,76 +113,70 @@ desenvolvimento — troque-o antes de expor isso a mais gente do que só você t
 Fluxo: tela inicial (`/`) → botão "Consultar" → login (crie uma conta em "Cadastre-se") → shell
 com menu lateral (SALDO / PAGAMENTO / PREVISÕES / CONTRATOS / SIOP).
 
-## Deploy num servidor (acesso de qualquer lugar, via Docker)
+## Deploy no servidor (Oracle Cloud Always Free — sempre ligado, sem hibernar)
 
-Se a rede local tiver isolamento de cliente (comum em Wi-Fi institucional/pública — os aparelhos
-não se enxergam entre si mesmo com o firewall liberado), a alternativa é hospedar o sistema inteiro
-num servidor de verdade. Existe um `docker-compose.yml` na raiz do projeto que sobe tudo (Postgres +
-7 serviços Java + frontend) com um único comando, pensado para uma VM gratuita (ex: Oracle Cloud
-"Always Free").
+O plano gratuito do Render hiberna cada serviço depois de 15 minutos sem uso e limita a conta a 750
+horas por mês. Com 7 serviços, o sistema demorava até minutos para responder. Na VM gratuita da
+Oracle, tudo roda junto via `docker-compose.yml` + `docker-compose.prod.yml`: Postgres, 7 serviços
+Java, nginx com o Angular e Caddy com HTTPS automático. Fica sempre no ar.
 
-### 0. Preparar a VM (Ubuntu na Oracle Cloud)
+### 1. Criar a VM (no painel da Oracle Cloud, uma vez só)
 
-Instale o Docker (inclui o `docker compose`), conectado por SSH na VM:
+1. Crie a conta em https://signup.cloud.oracle.com. Escolha a região **Brazil East (São Paulo)**. O
+   cartão é só para verificação, e os recursos "Always Free" não são cobrados.
+2. **Compute → Instances → Create instance**:
+   - Image: **Canonical Ubuntu 24.04**
+   - Shape: **Ampere → VM.Standard.A1.Flex**, com **4 OCPUs e 24 GB** de memória (tudo grátis)
+   - Baixe a chave SSH privada (`.key`) que ele gera
+3. Na página da instância, clique na **Subnet → Security List padrão → Add Ingress Rules** e libere
+   as portas **80 e 443** (Source CIDR `0.0.0.0/0`, protocolo TCP).
+4. Anote o **IP público** da instância.
+
+> Se aparecer "Out of capacity" para o shape A1, tente de novo mais tarde ou em outro Availability
+> Domain. É comum na Oracle.
+
+### 2. Instalar o sistema (um comando)
+
+No PowerShell do Windows:
 ```
-sudo apt update
-sudo apt install -y ca-certificates curl gnupg
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-sudo usermod -aG docker $USER
+ssh -i caminho\da\chave.key ubuntu@IP-PUBLICO
 ```
-Depois do `usermod`, saia (`exit`) e conecte de novo por SSH para o grupo `docker` valer (evita precisar
-de `sudo` em todo comando docker).
-
-Copie o projeto da sua máquina Windows para a VM (rode isto no **PowerShell do Windows**, não na VM —
-troque `usuario` e `IP-DA-VM` pelos dados reais da sua instância):
+Já dentro da VM:
 ```
-scp -r C:\Walter\RU-CUSTOS usuario@IP-DA-VM:~/
+curl -fsSL https://raw.githubusercontent.com/waltercarvalhob/ru-custos/main/deploy/instalar-servidor.sh | bash
 ```
-(o Windows 10/11 já vem com cliente `scp`/`ssh` embutido; se pedir a chave `.pem` da Oracle Cloud, use
-`scp -i caminho\da\chave.pem -r C:\Walter\RU-CUSTOS usuario@IP-DA-VM:~/`).
+O script instala o Docker, libera o firewall interno da VM, baixa o código, gera o `.env` com senhas
+aleatórias, oferece copiar os dados do Neon (pede a senha do banco que está no painel do Render) e
+sobe tudo. No fim ele mostra o endereço, por exemplo `https://1-2-3-4.sslip.io`. O `sslip.io` dá um
+nome com HTTPS sem precisar comprar domínio. Se tiver um domínio próprio, aponte-o para o IP e
+informe-o quando o script perguntar.
 
-**Na VM** (depois de conectar por SSH, dentro da pasta `~/RU-CUSTOS`):
+### 3. Publicar novas versões
 
-1. Confirme que o projeto chegou certinho: `ls` deve mostrar `docker-compose.yml`, `backend/`, `frontend/`, etc.
-2. Crie o arquivo de segredos a partir do modelo:
-   ```
-   cp .env.example .env
-   ```
-   Edite `.env` e troque `DB_PASSWORD` e `JWT_SECRET` por valores reais (gere o `JWT_SECRET` com
-   `openssl rand -base64 48`, por exemplo). **Nunca** commite o `.env` no git — ele já está no
-   `.gitignore`.
-3. Suba tudo:
-   ```
-   docker compose up -d --build
-   ```
-   A primeira vez demora alguns minutos (compila os 7 serviços Java + o frontend). Acompanhe com
-   `docker compose logs -f`.
-4. Carga inicial dos dados da planilha (rode uma vez, de dentro da VM, depois de copiar o `.xlsx`
-   para lá): usa um container Python temporário na mesma rede Docker, sem precisar instalar nada
-   na VM nem expor o Postgres publicamente:
-   ```
-   docker run --rm --network ru-custos_default \
-     -v "$(pwd)/tools:/tools" -v "$(pwd)":/dados \
-     -e RU_CUSTOS_DB_DSN="host=postgres port=5432 dbname=ru_custos user=postgres password=SUA_DB_PASSWORD_AQUI" \
-     python:3.12-slim bash -c "pip install -q openpyxl psycopg2-binary && python /tools/import_excel.py /dados/NOME_DA_PLANILHA.xlsx"
-   ```
-   (troque `SUA_DB_PASSWORD_AQUI` pelo valor real de `DB_PASSWORD` do `.env`, e `NOME_DA_PLANILHA.xlsx`
-   pelo nome do arquivo copiado para a VM; `ru-custos_default` é o nome da rede que o Docker Compose
-   cria automaticamente a partir do nome da pasta — confirme com `docker network ls` se o nome vier
-   diferente).
-5. Libere a porta 80 (HTTP) no firewall da própria VM (`ufw allow 80/tcp` no Ubuntu) **e** na regra
-   de rede da nuvem (na Oracle Cloud: "Security List" / "Network Security Group" da VCN — sem isso,
-   a porta fica bloqueada mesmo com o firewall do Linux liberado).
-6. Acesse `http://<IP-público-da-VM>` de qualquer lugar — o frontend (nginx) serve o Angular e
-   repassa `/api/*` para o gateway internamente, então não existe problema de CORS em produção.
+Depois de cada `git push`, rode na VM:
+```
+bash ~/ru-custos/deploy/atualizar.sh
+```
 
-Comandos úteis: `docker compose ps` (status), `docker compose logs -f <serviço>` (logs),
-`docker compose down` (para tudo, mantém os dados), `docker compose up -d --build` de novo depois
-de alterar código (reconstrói só o que mudou).
+Para recopiar os dados do Neon: `bash ~/ru-custos/deploy/migrar-dados-neon.sh`.
+
+Comandos úteis (dentro de `~/ru-custos`):
+```
+alias dc='sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml'
+dc ps                 # status
+dc logs -f gateway    # logs de um serviço
+dc restart saldo-service
+```
+
+### Carga inicial da planilha no servidor (opcional)
+
+Copie o `.xlsx` para `~/ru-custos` (`scp -i chave.key planilha.xlsx ubuntu@IP:~/ru-custos/`) e rode:
+```
+sudo docker run --rm --network ru-custos_default \
+  -v "$(pwd)/tools:/tools" -v "$(pwd)":/dados \
+  -e RU_CUSTOS_DB_DSN="host=postgres port=5432 dbname=ru_custos user=postgres password=$(grep ^DB_PASSWORD .env | cut -d= -f2)" \
+  python:3.12-slim bash -c "pip install -q openpyxl psycopg2-binary && python /tools/import_excel.py /dados/NOME_DA_PLANILHA.xlsx"
+```
 
 ## Segurança
 

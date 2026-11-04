@@ -56,8 +56,7 @@ export const routes: Routes = [
       },
       {
         path: 'financeiro-bolsas-auxilios',
-        loadComponent: () => import('./features/em-breve/em-breve.component').then((m) => m.EmBreveComponent),
-        data: { titulo: 'Controle Financeiro Bolsas e Auxílios' }
+        loadComponent: () => import('./features/auxilios/auxilios.component').then((m) => m.AuxiliosComponent)
       },
       {
         path: 'remanejamentos-bolsas-auxilios',

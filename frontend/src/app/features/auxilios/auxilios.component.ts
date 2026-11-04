@@ -1,6 +1,7 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../core/auth.service';
 import { AuxiliosService, PagamentoAuxilio } from './auxilios.service';
 
 @Component({
@@ -43,6 +44,7 @@ import { AuxiliosService, PagamentoAuxilio } from './auxilios.service';
       </form>
     </section>
 
+    @if (auth.ehAdmin()) {
     <section class="cartao">
       <h2>Novo pagamento</h2>
       <form class="grade-form" #formNovo="ngForm" (ngSubmit)="criar()">
@@ -112,10 +114,12 @@ import { AuxiliosService, PagamentoAuxilio } from './auxilios.service';
           Adicionar pagamento
         </button>
       </form>
-      @if (erro()) {
-        <p class="erro">{{ erro() }}</p>
-      }
     </section>
+    }
+
+    @if (erro()) {
+      <p class="erro">{{ erro() }}</p>
+    }
 
     <section class="cartao tabela-secao">
       <table class="tabela">
@@ -159,7 +163,11 @@ import { AuxiliosService, PagamentoAuxilio } from './auxilios.service';
               </td>
               <td class="sem-quebra">{{ a.valorTotal | currency: 'BRL' }}</td>
               <td>{{ a.observacao }}</td>
-              <td><button class="btn-excluir" (click)="excluir(a.id!)">Excluir</button></td>
+              <td>
+                @if (auth.ehAdmin()) {
+                  <button class="btn-excluir" (click)="excluir(a.id!)">Excluir</button>
+                }
+              </td>
             </tr>
           }
           @empty {
@@ -252,7 +260,7 @@ export class AuxiliosComponent implements OnInit {
 
   novo: Partial<PagamentoAuxilio> = {};
 
-  constructor(private service: AuxiliosService) {}
+  constructor(public auth: AuthService, private service: AuxiliosService) {}
 
   ngOnInit(): void {
     this.filtrar();

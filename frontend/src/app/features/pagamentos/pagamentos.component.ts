@@ -1,6 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../core/auth.service';
 import { Pagamento, PagamentosService } from './pagamentos.service';
 
 @Component({
@@ -29,6 +30,7 @@ import { Pagamento, PagamentosService } from './pagamentos.service';
       </form>
     </section>
 
+    @if (auth.ehAdmin()) {
     <section class="cartao">
       <h2>Novo pagamento</h2>
       <form class="grade-form" (ngSubmit)="criar()">
@@ -71,6 +73,7 @@ import { Pagamento, PagamentosService } from './pagamentos.service';
         <button class="btn-pilula btn-pilula--laranja" type="submit">Adicionar pagamento</button>
       </form>
     </section>
+    }
 
     <section class="cartao tabela-secao">
       <table class="tabela">
@@ -98,7 +101,11 @@ import { Pagamento, PagamentosService } from './pagamentos.service';
               <td>{{ p.valorNf | currency: 'BRL' }}</td>
               <td>{{ p.valorPago ? (p.valorPago | currency: 'BRL') : 'NÃO PAGO' }}</td>
               <td>{{ p.observacao }}</td>
-              <td><button class="btn-excluir" (click)="excluir(p.id!)">Excluir</button></td>
+              <td>
+                @if (auth.ehAdmin()) {
+                  <button class="btn-excluir" (click)="excluir(p.id!)">Excluir</button>
+                }
+              </td>
             </tr>
           }
           @empty {
@@ -148,7 +155,7 @@ export class PagamentosComponent implements OnInit {
 
   novo: Partial<Pagamento> = {};
 
-  constructor(private service: PagamentosService) {}
+  constructor(public auth: AuthService, private service: PagamentosService) {}
 
   ngOnInit(): void {
     this.filtrar();

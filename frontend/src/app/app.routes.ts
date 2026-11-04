@@ -62,6 +62,10 @@ export const routes: Routes = [
         path: 'remanejamentos-bolsas-auxilios',
         loadComponent: () => import('./features/em-breve/em-breve.component').then((m) => m.EmBreveComponent),
         data: { titulo: 'Remanejamentos Realizados Bolsas e Auxílios' }
+      },
+      {
+        path: 'usuarios',
+        loadComponent: () => import('./features/usuarios/usuarios.component').then((m) => m.UsuariosComponent)
       }
     ]
   },

@@ -27,6 +27,9 @@ import { AuthService } from '../core/auth.service';
           <a routerLink="/remanejamentos-bolsas-auxilios" routerLinkActive="ativo" class="btn-pilula">
             REMANEJAMENTOS REALIZADOS BOLSAS E AUXÍLIOS
           </a>
+          @if (auth.ehAdmin()) {
+            <a routerLink="/usuarios" routerLinkActive="ativo" class="btn-pilula">USUÁRIOS</a>
+          }
         </nav>
         <div class="barra__rodape">
           <p class="usuario">{{ auth.usuarioAtual()?.nome }}</p>

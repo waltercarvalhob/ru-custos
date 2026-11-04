@@ -42,6 +42,8 @@ public class AuthController {
         usuario.setNome(requisicao.nome());
         usuario.setEmail(requisicao.email());
         usuario.setSenhaHash(passwordEncoder.encode(requisicao.senha()));
+        // O registro e publico: a conta so entra depois de aprovada por um ADMIN.
+        usuario.setAtivo(false);
         usuario = usuarioRepository.save(usuario);
         return UsuarioResponse.de(usuario);
     }
@@ -51,8 +53,11 @@ public class AuthController {
         Usuario usuario = usuarioRepository.findByEmail(requisicao.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "email ou senha inválidos"));
 
-        if (!usuario.isAtivo() || !passwordEncoder.matches(requisicao.senha(), usuario.getSenhaHash())) {
+        if (!passwordEncoder.matches(requisicao.senha(), usuario.getSenhaHash())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "email ou senha inválidos");
+        }
+        if (!usuario.isAtivo()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "conta aguardando aprovação ou desativada");
         }
 
         String token = jwtService.gerarToken(usuario);

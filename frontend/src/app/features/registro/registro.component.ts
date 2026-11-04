@@ -113,8 +113,8 @@ export class RegistroComponent {
     this.auth.registrar(this.nome, this.email, this.senha).subscribe({
       next: () => {
         this.carregando = false;
-        this.mensagemSucesso = 'Conta criada! Redirecionando para o login...';
-        setTimeout(() => this.router.navigate(['/login']), 1200);
+        this.mensagemSucesso = 'Cadastro enviado! Você poderá entrar depois da aprovação de um administrador.';
+        setTimeout(() => this.router.navigate(['/login']), 4000);
       },
       error: (erro) => {
         this.carregando = false;

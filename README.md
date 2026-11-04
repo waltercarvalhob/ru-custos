@@ -184,10 +184,19 @@ Login emite um JWT (HMAC) no `auth-service`. Cada serviço valida esse token com
 compartilhado (`ru-custos.jwt.secret` em cada `application.properties` — **troque esse valor
 antes de qualquer uso fora da sua máquina**). O gateway também valida o token antes de rotear.
 
+O registro é público, mas a conta nasce desativada: um `ADMIN` aprova na tela **Usuários**. No
+`pagamentos-service`, incluir, alterar e excluir exige perfil `ADMIN`. O perfil e a situação da
+conta viajam no JWT, então uma mudança só vale no próximo login (o token dura 12 horas).
+
+O primeiro administrador é definido direto no banco. Depois, entre de novo no sistema:
+
+```sql
+UPDATE auth.usuarios SET perfil = 'ADMIN', ativo = true WHERE email = 'email-do-administrador';
+```
+
 ## Próximos passos (quando quiser expandir)
 
-- Perfis de usuário (`ADMIN`/`GESTOR`/`VISUALIZADOR`) já existem no modelo, mas nenhuma tela/
-  endpoint hoje restringe ação por perfil — é só autenticação, não autorização por papel.
+- Os demais serviços (contratos, previsões, SIOP, saldo) ainda não restringem escrita por perfil.
 - A metodologia de cálculo de previsão em `previsoes-service` é uma aproximação da lógica da
   planilha original; vale validar os números lado a lado com a planilha depois da carga inicial.
 - Sem testes automatizados ainda.

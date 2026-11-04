@@ -1,14 +1,17 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, signal } from '@angular/core';
+import { Injectable, computed, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { retryAoAcordar } from './retry-cold-start';
 import { environment } from '../../environments/environment';
+
+export type PerfilUsuario = 'ADMIN' | 'GESTOR' | 'VISUALIZADOR';
 
 export interface Usuario {
   id: number;
   nome: string;
   email: string;
-  perfil: 'ADMIN' | 'GESTOR' | 'VISUALIZADOR';
+  perfil: PerfilUsuario;
+  ativo: boolean;
 }
 
 interface LoginResponse {
@@ -22,6 +25,7 @@ const CHAVE_USUARIO = 'ru-custos.usuario';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   usuarioAtual = signal<Usuario | null>(this.carregarUsuario());
+  ehAdmin = computed(() => this.usuarioAtual()?.perfil === 'ADMIN');
 
   constructor(private http: HttpClient) {}
 

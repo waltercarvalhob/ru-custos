@@ -1,5 +1,6 @@
 package br.edu.ufma.rucustos.pagamentos.config;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -23,7 +24,7 @@ import java.util.List;
 /**
  * Exige um JWT valido em toda requisicao /api/**. Este servico nao possui rotas
  * publicas (login e registro ficam no auth-service): o token ja chega validado
- * uma vez pelo gateway, mas cada servico revalida por conta propria.
+ * uma vez pelo gateway, mas cada servico revalida por conta propria. Escritas exigem perfil ADMIN.
  */
 @Configuration
 public class JwtFilterConfig {
@@ -55,14 +56,21 @@ public class JwtFilterConfig {
 
             String header = request.getHeader("Authorization");
             if (header == null || !header.startsWith("Bearer ")) {
-                naoAutorizado(request, response, "token ausente");
+                rejeitar(request, response, HttpServletResponse.SC_UNAUTHORIZED, "token ausente");
                 return;
             }
 
+            Claims claims;
             try {
-                Jwts.parser().verifyWith(chave).build().parseSignedClaims(header.substring(7));
+                claims = Jwts.parser().verifyWith(chave).build().parseSignedClaims(header.substring(7)).getPayload();
             } catch (JwtException | IllegalArgumentException ex) {
-                naoAutorizado(request, response, "token inválido ou expirado");
+                rejeitar(request, response, HttpServletResponse.SC_UNAUTHORIZED, "token inválido ou expirado");
+                return;
+            }
+
+            // Qualquer usuario aprovado consulta; incluir, alterar e excluir e so para ADMIN.
+            if (!"GET".equalsIgnoreCase(request.getMethod()) && !"ADMIN".equals(claims.get("perfil", String.class))) {
+                rejeitar(request, response, HttpServletResponse.SC_FORBIDDEN, "ação restrita a administradores");
                 return;
             }
 
@@ -75,15 +83,16 @@ public class JwtFilterConfig {
         return registration;
     }
 
-    private static void naoAutorizado(HttpServletRequest request, HttpServletResponse response, String mensagem)
+    private static void rejeitar(HttpServletRequest request, HttpServletResponse response, int status, String mensagem)
             throws IOException {
         String origem = request.getHeader("Origin");
         if (origem != null && CORS.checkOrigin(origem) != null) {
             response.setHeader("Access-Control-Allow-Origin", origem);
             response.setHeader("Vary", "Origin");
         }
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(status);
         response.setContentType("application/json");
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.getWriter().write("{\"error\":\"" + mensagem + "\"}");
     }
 }

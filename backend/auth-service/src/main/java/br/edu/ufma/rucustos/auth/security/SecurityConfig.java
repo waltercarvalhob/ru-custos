@@ -48,7 +48,10 @@ public class SecurityConfig {
                 })
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/registrar", "/api/auth/login").permitAll()
+                        // /error liberado para o status real (ex: 401 no login) chegar ao cliente;
+                        // bloqueado, toda ResponseStatusException viraria 403.
+                        .requestMatchers("/api/auth/registrar", "/api/auth/login", "/error").permitAll()
+                        .requestMatchers("/api/auth/usuarios/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

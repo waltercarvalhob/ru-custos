@@ -119,6 +119,8 @@ export class LoginComponent {
             'Não foi possível conectar ao servidor depois de várias tentativas. Recarregue a página em alguns instantes.';
         } else if (erro.status === 401) {
           this.mensagemErro = 'Email ou senha inválidos.';
+        } else if (erro.status === 403) {
+          this.mensagemErro = 'Sua conta está aguardando aprovação de um administrador ou foi desativada.';
         } else {
           this.mensagemErro = `Erro inesperado (código ${erro.status}). Veja o console do navegador (F12) para detalhes.`;
         }

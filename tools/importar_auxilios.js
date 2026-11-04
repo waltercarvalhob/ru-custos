@@ -6,7 +6,7 @@ A planilha contem nomes de discentes: ela e passada por parametro e nao deve ent
 Conferir a planilha sem gravar nada (lista os lancamentos com valores incoerentes):
   node tools/importar_auxilios.js "C:\caminho\planilha.xlsx" --simular
 
-Importar (recusa rodar se a tabela ja tiver dados, para nao duplicar):
+Importar com uma conta ADMIN (recusa rodar se a tabela ja tiver dados, para nao duplicar):
   RU_EMAIL=... RU_SENHA=... node tools/importar_auxilios.js "C:\caminho\planilha.xlsx"
 
 Por padrao usa o gateway local. Para outro ambiente, defina RU_AUTH_URL e RU_PAGAMENTOS_URL

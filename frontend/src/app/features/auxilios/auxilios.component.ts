@@ -144,11 +144,11 @@ function categoriaDoAuxilio(nome: string): string {
           <h2>Total pago por auxílio</h2>
           <div class="resumo__filtros">
             <div class="campo">
-              <label>Mês</label>
-              <select [ngModel]="mesResumoAuxilio()" (ngModelChange)="mesResumoAuxilio.set($event)">
+              <label>Tipo de auxílio</label>
+              <select [ngModel]="tipoResumoAuxilio()" (ngModelChange)="tipoResumoAuxilio.set($event)">
                 <option [ngValue]="null">Todos</option>
-                @for (m of meses; track m; let i = $index) {
-                  <option [ngValue]="i + 1">{{ m }}</option>
+                @for (t of tiposAuxilio(); track t) {
+                  <option [ngValue]="t">{{ t }}</option>
                 }
               </select>
             </div>
@@ -476,12 +476,20 @@ export class AuxiliosComponent implements OnInit {
   anoResumoMes = signal<number | null>(null);
   mesResumoMes = signal<number | null>(null);
   anoResumoAuxilio = signal<number | null>(null);
-  mesResumoAuxilio = signal<number | null>(null);
+  tipoResumoAuxilio = signal<string | null>(null);
 
   anosResumo = computed(() => [...new Set(this.pagamentos().map((a) => a.ano))].sort((a, b) => b - a));
+  tiposAuxilio = computed(() =>
+    [...new Set(this.pagamentos().map((a) => categoriaDoAuxilio(a.nomeAuxilio)))].sort((a, b) => a.localeCompare(b))
+  );
 
   private linhasResumoMes = computed(() => this.noPeriodo(this.anoResumoMes(), this.mesResumoMes()));
-  private linhasResumoAuxilio = computed(() => this.noPeriodo(this.anoResumoAuxilio(), this.mesResumoAuxilio()));
+  private linhasResumoAuxilio = computed(() => {
+    const tipo = this.tipoResumoAuxilio();
+    return this.noPeriodo(this.anoResumoAuxilio(), null).filter(
+      (a) => tipo === null || categoriaDoAuxilio(a.nomeAuxilio) === tipo
+    );
+  });
 
   totalResumoMes = computed(() => this.somar(() => 0, this.linhasResumoMes())[0]?.valor ?? 0);
   totalResumoAuxilio = computed(() => this.somar(() => 0, this.linhasResumoAuxilio())[0]?.valor ?? 0);

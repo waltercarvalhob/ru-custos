@@ -6,6 +6,32 @@ import { AuxiliosService, PagamentoAuxilio } from './auxilios.service';
 
 const ITENS_POR_PAGINA = 15;
 
+// A planilha escreve o mesmo auxilio de formas diferentes (ex: "CRECHE" e "Auxílio Creche").
+const CATEGORIAS: [RegExp, string][] = [
+  [/alimentacao/, 'Alimentação'],
+  [/moradia/, 'Moradia'],
+  [/transporte|intermunicipal|intramunicipal/, 'Transporte'],
+  [/creche/, 'Creche'],
+  [/emergencial/, 'Emergencial'],
+  [/apoio academico/, 'Apoio Acadêmico'],
+  [/aprimoramento/, 'Aprimoramento Acadêmico'],
+  [/odontologia/, 'Odontologia'],
+  [/eventos/, 'Participação em Eventos'],
+  [/promisaes/, 'PROMISAES'],
+  [/acessibilidade/, 'Acessibilidade'],
+  [/tutoria/, 'Tutoria Inclusiva'],
+  [/tecnologia assistiva/, 'Tecnologia Assistiva']
+];
+
+function categoriaDoAuxilio(nome: string): string {
+  const normalizado = nome
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+  // Auxilio novo, fora da lista, aparece com o proprio nome em vez de sumir do resumo.
+  return CATEGORIAS.find(([padrao]) => padrao.test(normalizado))?.[1] ?? nome;
+}
+
 @Component({
   selector: 'app-auxilios',
   standalone: true,
@@ -45,6 +71,64 @@ const ITENS_POR_PAGINA = 15;
         <button class="btn-pilula btn-pilula--laranja" type="submit">Filtrar</button>
       </form>
     </section>
+
+    @if (pagamentos().length) {
+      <div class="resumos">
+        <section class="cartao resumo">
+          <h2>Total pago por mês</h2>
+          <div class="resumo__lista">
+            <table class="tabela">
+              <tbody>
+                @for (r of resumoPorMes(); track r.rotulo) {
+                  <tr>
+                    <td>{{ r.rotulo }}</td>
+                    <td class="valor">{{ r.valor | currency: 'BRL' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="cartao resumo">
+          <h2>Total pago por ano</h2>
+          <div class="resumo__lista">
+            <table class="tabela">
+              <tbody>
+                @for (r of resumoPorAno(); track r.rotulo) {
+                  <tr>
+                    <td>{{ r.rotulo }}</td>
+                    <td class="valor">{{ r.valor | currency: 'BRL' }}</td>
+                  </tr>
+                }
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th scope="row">Total geral</th>
+                  <td class="valor total">{{ totalGeral() | currency: 'BRL' }}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </section>
+
+        <section class="cartao resumo">
+          <h2>Total pago por auxílio</h2>
+          <div class="resumo__lista">
+            <table class="tabela">
+              <tbody>
+                @for (r of resumoPorAuxilio(); track r.rotulo) {
+                  <tr>
+                    <td>{{ r.rotulo }}</td>
+                    <td class="valor">{{ r.valor | currency: 'BRL' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    }
 
     @if (auth.ehAdmin()) {
     <section class="cartao">
@@ -231,6 +315,29 @@ const ITENS_POR_PAGINA = 15;
         white-space: nowrap;
       }
 
+      .resumos {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      /* Lista longa rola dentro do cartao, para nao empurrar a tabela para baixo. */
+      .resumo__lista {
+        max-height: 16rem;
+        overflow-y: auto;
+      }
+
+      .resumo .valor {
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .resumo .total {
+        font-weight: 700;
+        color: var(--bordo-escuro);
+      }
+
       td small {
         display: block;
         white-space: nowrap;
@@ -245,8 +352,9 @@ const ITENS_POR_PAGINA = 15;
       .paginacao {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         justify-content: center;
-        gap: 1.5rem;
+        gap: 0.75rem 1.5rem;
         margin-top: 1.25rem;
         color: #7a6d6a;
       }
@@ -293,6 +401,23 @@ export class AuxiliosComponent implements OnInit {
   pagamentos = signal<PagamentoAuxilio[]>([]);
   erro = signal('');
 
+  resumoPorMes = computed(() =>
+    this.somar((a) => a.ano * 100 + a.mes)
+      .sort((a, b) => b.chave - a.chave)
+      .map((r) => ({ rotulo: `${this.meses[r.chave % 100 - 1]}/${Math.floor(r.chave / 100)}`, valor: r.valor }))
+  );
+  resumoPorAno = computed(() =>
+    this.somar((a) => a.ano)
+      .sort((a, b) => b.chave - a.chave)
+      .map((r) => ({ rotulo: String(r.chave), valor: r.valor }))
+  );
+  resumoPorAuxilio = computed(() =>
+    this.somar((a) => categoriaDoAuxilio(a.nomeAuxilio))
+      .sort((a, b) => b.valor - a.valor)
+      .map((r) => ({ rotulo: r.chave, valor: r.valor }))
+  );
+  totalGeral = computed(() => this.somar(() => 0)[0]?.valor ?? 0);
+
   private paginaPedida = signal(1);
   totalPaginas = computed(() => Math.max(1, Math.ceil(this.pagamentos().length / ITENS_POR_PAGINA)));
   // Limita ao total: excluir o ultimo item da ultima pagina volta para a anterior.
@@ -322,6 +447,16 @@ export class AuxiliosComponent implements OnInit {
 
   irPara(pagina: number): void {
     this.paginaPedida.set(pagina);
+  }
+
+  // Soma em centavos para nao acumular erro de ponto flutuante.
+  private somar<T>(chaveDe: (a: PagamentoAuxilio) => T): { chave: T; valor: number }[] {
+    const centavos = new Map<T, number>();
+    for (const a of this.pagamentos()) {
+      const chave = chaveDe(a);
+      centavos.set(chave, (centavos.get(chave) ?? 0) + Math.round((a.valorTotal ?? 0) * 100));
+    }
+    return [...centavos].map(([chave, c]) => ({ chave, valor: c / 100 }));
   }
 
   private carregar(): void {

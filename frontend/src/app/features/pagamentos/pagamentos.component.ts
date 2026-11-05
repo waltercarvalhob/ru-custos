@@ -158,8 +158,9 @@ const ITENS_POR_PAGINA = 15;
       .paginacao {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         justify-content: center;
-        gap: 1.5rem;
+        gap: 0.75rem 1.5rem;
         margin-top: 1.25rem;
         color: #7a6d6a;
       }

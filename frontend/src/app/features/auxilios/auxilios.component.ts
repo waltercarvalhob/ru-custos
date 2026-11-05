@@ -76,6 +76,29 @@ function categoriaDoAuxilio(nome: string): string {
       <div class="resumos">
         <section class="cartao resumo">
           <h2>Total pago por mês</h2>
+          <div class="resumo__filtros">
+            <div class="campo">
+              <label>Mês</label>
+              <select [ngModel]="mesResumoMes()" (ngModelChange)="mesResumoMes.set($event)">
+                <option [ngValue]="null">Todos</option>
+                @for (m of meses; track m; let i = $index) {
+                  <option [ngValue]="i + 1">{{ m }}</option>
+                }
+              </select>
+            </div>
+            <div class="campo">
+              <label>Ano</label>
+              <select [ngModel]="anoResumoMes()" (ngModelChange)="anoResumoMes.set($event)">
+                <option [ngValue]="null">Todos</option>
+                @for (a of anosResumo(); track a) {
+                  <option [ngValue]="a">{{ a }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <p class="resumo__total">
+            Total: <strong>{{ totalResumoMes() | currency: 'BRL' }}</strong>
+          </p>
           <div class="resumo__lista">
             <table class="tabela">
               <tbody>
@@ -83,6 +106,11 @@ function categoriaDoAuxilio(nome: string): string {
                   <tr>
                     <td>{{ r.rotulo }}</td>
                     <td class="valor">{{ r.valor | currency: 'BRL' }}</td>
+                  </tr>
+                }
+                @empty {
+                  <tr>
+                    <td colspan="2">Nenhum pagamento neste período.</td>
                   </tr>
                 }
               </tbody>
@@ -114,6 +142,29 @@ function categoriaDoAuxilio(nome: string): string {
 
         <section class="cartao resumo">
           <h2>Total pago por auxílio</h2>
+          <div class="resumo__filtros">
+            <div class="campo">
+              <label>Mês</label>
+              <select [ngModel]="mesResumoAuxilio()" (ngModelChange)="mesResumoAuxilio.set($event)">
+                <option [ngValue]="null">Todos</option>
+                @for (m of meses; track m; let i = $index) {
+                  <option [ngValue]="i + 1">{{ m }}</option>
+                }
+              </select>
+            </div>
+            <div class="campo">
+              <label>Ano</label>
+              <select [ngModel]="anoResumoAuxilio()" (ngModelChange)="anoResumoAuxilio.set($event)">
+                <option [ngValue]="null">Todos</option>
+                @for (a of anosResumo(); track a) {
+                  <option [ngValue]="a">{{ a }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <p class="resumo__total">
+            Total: <strong>{{ totalResumoAuxilio() | currency: 'BRL' }}</strong>
+          </p>
           <div class="resumo__lista">
             <table class="tabela">
               <tbody>
@@ -121,6 +172,11 @@ function categoriaDoAuxilio(nome: string): string {
                   <tr>
                     <td>{{ r.rotulo }}</td>
                     <td class="valor">{{ r.valor | currency: 'BRL' }}</td>
+                  </tr>
+                }
+                @empty {
+                  <tr>
+                    <td colspan="2">Nenhum pagamento neste período.</td>
                   </tr>
                 }
               </tbody>
@@ -322,6 +378,22 @@ function categoriaDoAuxilio(nome: string): string {
         margin: 1rem 0;
       }
 
+      .resumo__filtros {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+      }
+
+      .resumo__total {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9rem;
+        color: #7a6d6a;
+      }
+
+      .resumo__total strong {
+        color: var(--bordo-escuro);
+      }
+
       /* Lista longa rola dentro do cartao, para nao empurrar a tabela para baixo. */
       .resumo__lista {
         max-height: 16rem;
@@ -401,8 +473,21 @@ export class AuxiliosComponent implements OnInit {
   pagamentos = signal<PagamentoAuxilio[]>([]);
   erro = signal('');
 
+  anoResumoMes = signal<number | null>(null);
+  mesResumoMes = signal<number | null>(null);
+  anoResumoAuxilio = signal<number | null>(null);
+  mesResumoAuxilio = signal<number | null>(null);
+
+  anosResumo = computed(() => [...new Set(this.pagamentos().map((a) => a.ano))].sort((a, b) => b - a));
+
+  private linhasResumoMes = computed(() => this.noPeriodo(this.anoResumoMes(), this.mesResumoMes()));
+  private linhasResumoAuxilio = computed(() => this.noPeriodo(this.anoResumoAuxilio(), this.mesResumoAuxilio()));
+
+  totalResumoMes = computed(() => this.somar(() => 0, this.linhasResumoMes())[0]?.valor ?? 0);
+  totalResumoAuxilio = computed(() => this.somar(() => 0, this.linhasResumoAuxilio())[0]?.valor ?? 0);
+
   resumoPorMes = computed(() =>
-    this.somar((a) => a.ano * 100 + a.mes)
+    this.somar((a) => a.ano * 100 + a.mes, this.linhasResumoMes())
       .sort((a, b) => b.chave - a.chave)
       .map((r) => ({ rotulo: `${this.meses[r.chave % 100 - 1]}/${Math.floor(r.chave / 100)}`, valor: r.valor }))
   );
@@ -412,7 +497,7 @@ export class AuxiliosComponent implements OnInit {
       .map((r) => ({ rotulo: String(r.chave), valor: r.valor }))
   );
   resumoPorAuxilio = computed(() =>
-    this.somar((a) => categoriaDoAuxilio(a.nomeAuxilio))
+    this.somar((a) => categoriaDoAuxilio(a.nomeAuxilio), this.linhasResumoAuxilio())
       .sort((a, b) => b.valor - a.valor)
       .map((r) => ({ rotulo: r.chave, valor: r.valor }))
   );
@@ -449,10 +534,17 @@ export class AuxiliosComponent implements OnInit {
     this.paginaPedida.set(pagina);
   }
 
+  private noPeriodo(ano: number | null, mes: number | null): PagamentoAuxilio[] {
+    return this.pagamentos().filter((a) => (ano === null || a.ano === ano) && (mes === null || a.mes === mes));
+  }
+
   // Soma em centavos para nao acumular erro de ponto flutuante.
-  private somar<T>(chaveDe: (a: PagamentoAuxilio) => T): { chave: T; valor: number }[] {
+  private somar<T>(
+    chaveDe: (a: PagamentoAuxilio) => T,
+    linhas: PagamentoAuxilio[] = this.pagamentos()
+  ): { chave: T; valor: number }[] {
     const centavos = new Map<T, number>();
-    for (const a of this.pagamentos()) {
+    for (const a of linhas) {
       const chave = chaveDe(a);
       centavos.set(chave, (centavos.get(chave) ?? 0) + Math.round((a.valorTotal ?? 0) * 100));
     }

@@ -1,8 +1,10 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
 import { AuxiliosService, PagamentoAuxilio } from './auxilios.service';
+
+const ITENS_POR_PAGINA = 15;
 
 @Component({
   selector: 'app-auxilios',
@@ -140,7 +142,7 @@ import { AuxiliosService, PagamentoAuxilio } from './auxilios.service';
           </tr>
         </thead>
         <tbody>
-          @for (a of pagamentos(); track a.id) {
+          @for (a of paginaAtual(); track a.id) {
             <tr>
               <td class="sem-quebra">{{ meses[a.mes - 1] }}/{{ a.ano }}</td>
               <td>{{ a.setor }}</td>
@@ -177,6 +179,22 @@ import { AuxiliosService, PagamentoAuxilio } from './auxilios.service';
           }
         </tbody>
       </table>
+      @if (totalPaginas() > 1) {
+        <nav class="paginacao">
+          <button type="button" class="btn-pagina" [disabled]="pagina() === 1" (click)="irPara(pagina() - 1)">
+            Anterior
+          </button>
+          <span>Página {{ pagina() }} de {{ totalPaginas() }} · {{ pagamentos().length }} lançamentos</span>
+          <button
+            type="button"
+            class="btn-pagina"
+            [disabled]="pagina() === totalPaginas()"
+            (click)="irPara(pagina() + 1)"
+          >
+            Próxima
+          </button>
+        </nav>
+      }
     </section>
   `,
   styles: [
@@ -224,6 +242,28 @@ import { AuxiliosService, PagamentoAuxilio } from './auxilios.service';
         margin-top: 1rem;
       }
 
+      .paginacao {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 1.25rem;
+        color: #7a6d6a;
+      }
+
+      .btn-pagina {
+        background: transparent;
+        border: 2px solid var(--bordo);
+        border-radius: 999px;
+        color: var(--bordo);
+        font-weight: 700;
+        padding: 0.4rem 1.25rem;
+      }
+
+      .btn-pagina:disabled {
+        opacity: 0.4;
+      }
+
       .btn-excluir {
         background: transparent;
         border: none;
@@ -253,6 +293,15 @@ export class AuxiliosComponent implements OnInit {
   pagamentos = signal<PagamentoAuxilio[]>([]);
   erro = signal('');
 
+  private paginaPedida = signal(1);
+  totalPaginas = computed(() => Math.max(1, Math.ceil(this.pagamentos().length / ITENS_POR_PAGINA)));
+  // Limita ao total: excluir o ultimo item da ultima pagina volta para a anterior.
+  pagina = computed(() => Math.min(this.paginaPedida(), this.totalPaginas()));
+  paginaAtual = computed(() => {
+    const inicio = (this.pagina() - 1) * ITENS_POR_PAGINA;
+    return this.pagamentos().slice(inicio, inicio + ITENS_POR_PAGINA);
+  });
+
   filtroSetor = '';
   filtroAno: number | null = null;
   filtroMes: number | null = null;
@@ -267,6 +316,15 @@ export class AuxiliosComponent implements OnInit {
   }
 
   filtrar(): void {
+    this.paginaPedida.set(1);
+    this.carregar();
+  }
+
+  irPara(pagina: number): void {
+    this.paginaPedida.set(pagina);
+  }
+
+  private carregar(): void {
     this.service
       .listar({
         setor: this.filtroSetor || undefined,
@@ -285,7 +343,7 @@ export class AuxiliosComponent implements OnInit {
     this.service.criar(this.novo as PagamentoAuxilio).subscribe({
       next: () => {
         this.novo = {};
-        this.filtrar();
+        this.carregar();
       },
       error: () => this.erro.set('Não foi possível salvar o pagamento. Confira os campos e tente novamente.')
     });
@@ -294,7 +352,7 @@ export class AuxiliosComponent implements OnInit {
   excluir(id: number): void {
     this.erro.set('');
     this.service.excluir(id).subscribe({
-      next: () => this.filtrar(),
+      next: () => this.carregar(),
       error: () => this.erro.set('Não foi possível excluir o pagamento.')
     });
   }

@@ -34,34 +34,26 @@ export const routes: Routes = [
         loadComponent: () => import('./features/saldo/saldo.component').then((m) => m.SaldoComponent)
       },
       {
-        path: 'remanejamentos',
-        loadComponent: () =>
-          import('./features/remanejamentos/remanejamentos.component').then((m) => m.RemanejamentosComponent)
-      },
-      {
-        path: 'contratos',
-        loadComponent: () => import('./features/contratos/contratos.component').then((m) => m.ContratosComponent)
-      },
-      {
         path: 'pagamentos',
         loadComponent: () => import('./features/pagamentos/pagamentos.component').then((m) => m.PagamentosComponent)
-      },
-      {
-        path: 'previsoes',
-        loadComponent: () => import('./features/previsoes/previsoes.component').then((m) => m.PrevisoesComponent)
-      },
-      {
-        path: 'siop',
-        loadComponent: () => import('./features/siop/siop.component').then((m) => m.SiopComponent)
       },
       {
         path: 'financeiro-bolsas-auxilios',
         loadComponent: () => import('./features/auxilios/auxilios.component').then((m) => m.AuxiliosComponent)
       },
       {
-        path: 'remanejamentos-bolsas-auxilios',
-        loadComponent: () => import('./features/em-breve/em-breve.component').then((m) => m.EmBreveComponent),
-        data: { titulo: 'Remanejamentos Realizados Bolsas e Auxílios' }
+        path: 'orcamento-ru',
+        loadComponent: () => import('./features/orcamento/orcamento.component').then((m) => m.OrcamentoComponent),
+        data: { setor: 'RU' }
+      },
+      {
+        path: 'orcamento-bolsas-auxilios',
+        loadComponent: () => import('./features/orcamento/orcamento.component').then((m) => m.OrcamentoComponent),
+        data: { setor: 'AUXILIOS' }
+      },
+      {
+        path: 'siop',
+        loadComponent: () => import('./features/siop/siop.component').then((m) => m.SiopComponent)
       },
       {
         path: 'usuarios',

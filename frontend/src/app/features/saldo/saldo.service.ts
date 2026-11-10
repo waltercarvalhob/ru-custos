@@ -22,7 +22,7 @@ export interface SaldoResumo {
   valorDisponivelRemanejamento: number;
 }
 
-interface ContratosResumoDto {
+export interface ContratosResumoDto {
   valorTotalContratos: number;
   valorTotalUtilizado: number;
   saldoContratos: number;
@@ -45,26 +45,13 @@ interface SiopResumoDto {
   saldoAUtilizarCusteio: number;
 }
 
-export type CategoriaRemanejamento =
-  | 'BOLSAS_AUXILIOS'
-  | 'APOIO_ACADEMICO'
-  | 'TRANSPORTE_INTERMUNICIPAL'
-  | 'TRANSPORTE_INTRAMUNICIPAL'
-  | 'MORADIA_PECUNIARIA';
-
-export interface RemanejamentoSugestao {
-  id?: number;
-  categoria: CategoriaRemanejamento;
-  valorSugerido: number;
-  observacao?: string;
-  mesReferencia?: string;
-}
-
-const BASE = environment.saldoBaseUrl;
-
 @Injectable({ providedIn: 'root' })
 export class SaldoService {
   constructor(private http: HttpClient) {}
+
+  resumoContratos(): Observable<ContratosResumoDto> {
+    return this.http.get<ContratosResumoDto>(`${environment.contratosBaseUrl}/resumo`).pipe(retryAoAcordar());
+  }
 
   /**
    * Monta o resumo no proprio navegador, combinando os resumos individuais de
@@ -104,17 +91,5 @@ export class SaldoService {
         };
       })
     );
-  }
-
-  listarRemanejamentos(): Observable<RemanejamentoSugestao[]> {
-    return this.http.get<RemanejamentoSugestao[]>(`${BASE}/remanejamentos`).pipe(retryAoAcordar());
-  }
-
-  criarRemanejamento(sugestao: RemanejamentoSugestao): Observable<RemanejamentoSugestao> {
-    return this.http.post<RemanejamentoSugestao>(`${BASE}/remanejamentos`, sugestao);
-  }
-
-  excluirRemanejamento(id: number): Observable<void> {
-    return this.http.delete<void>(`${BASE}/remanejamentos/${id}`);
   }
 }

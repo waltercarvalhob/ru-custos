@@ -111,7 +111,13 @@ login (`ru-custos.jwt.secret` em cada `application.properties`) ainda é o valor
 desenvolvimento — troque-o antes de expor isso a mais gente do que só você testando.
 
 Fluxo: tela inicial (`/`) → botão "Consultar" → login (crie uma conta em "Cadastre-se") → shell
-com menu lateral (SALDO / PAGAMENTO / PREVISÕES / CONTRATOS / SIOP).
+com menu lateral (Resumo Executivo, Controle Financeiro RU e Bolsas e Auxílios, Controle
+Orçamentário RU e Bolsas e Auxílios, SIOP).
+
+No Controle Orçamentário, o valor pago de cada empenho é somado a partir dos lançamentos do
+Controle Financeiro que citam o mesmo número; só o valor do empenho é informado à mão. As telas de
+contratos, previsões e remanejamentos saíram do menu, mas os serviços e os dados continuam (a tela
+Início e o valor dos contratos no Resumo Executivo ainda os usam).
 
 ## Deploy no servidor (Oracle Cloud Always Free — sempre ligado, sem hibernar)
 

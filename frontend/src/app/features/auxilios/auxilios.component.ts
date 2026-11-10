@@ -3,34 +3,9 @@ import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
 import { AuxiliosService, PagamentoAuxilio } from './auxilios.service';
+import { categoriaDoAuxilio } from './categorias';
 
 const ITENS_POR_PAGINA = 15;
-
-// A planilha escreve o mesmo auxilio de formas diferentes (ex: "CRECHE" e "Auxílio Creche").
-const CATEGORIAS: [RegExp, string][] = [
-  [/alimentacao/, 'Alimentação'],
-  [/moradia/, 'Moradia'],
-  [/transporte|intermunicipal|intramunicipal/, 'Transporte'],
-  [/creche/, 'Creche'],
-  [/emergencial/, 'Emergencial'],
-  [/apoio academico/, 'Apoio Acadêmico'],
-  [/aprimoramento/, 'Aprimoramento Acadêmico'],
-  [/odontologia/, 'Odontologia'],
-  [/eventos/, 'Participação em Eventos'],
-  [/promisaes/, 'PROMISAES'],
-  [/acessibilidade/, 'Acessibilidade'],
-  [/tutoria/, 'Tutoria Inclusiva'],
-  [/tecnologia assistiva/, 'Tecnologia Assistiva']
-];
-
-function categoriaDoAuxilio(nome: string): string {
-  const normalizado = nome
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase();
-  // Auxilio novo, fora da lista, aparece com o proprio nome em vez de sumir do resumo.
-  return CATEGORIAS.find(([padrao]) => padrao.test(normalizado))?.[1] ?? nome;
-}
 
 @Component({
   selector: 'app-auxilios',

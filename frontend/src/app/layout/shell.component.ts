@@ -29,13 +29,11 @@ import { AuthService } from '../core/auth.service';
           <a routerLink="/financeiro-bolsas-auxilios" routerLinkActive="ativo" class="btn-pilula">
             CONTROLE FINANCEIRO BOLSAS E AUXÍLIOS
           </a>
-          <a routerLink="/previsoes" routerLinkActive="ativo" class="btn-pilula">CONTROLE ORÇAMENTÁRIO</a>
-          <a routerLink="/contratos" routerLinkActive="ativo" class="btn-pilula">CONTRATO RESTAURANTE</a>
-          <a routerLink="/siop" routerLinkActive="ativo" class="btn-pilula">SIOP</a>
-          <a routerLink="/remanejamentos" routerLinkActive="ativo" class="btn-pilula">REMANEJAMENTOS REALIZADOS RU</a>
-          <a routerLink="/remanejamentos-bolsas-auxilios" routerLinkActive="ativo" class="btn-pilula">
-            REMANEJAMENTOS REALIZADOS BOLSAS E AUXÍLIOS
+          <a routerLink="/orcamento-ru" routerLinkActive="ativo" class="btn-pilula">CONTROLE ORÇAMENTÁRIO RU</a>
+          <a routerLink="/orcamento-bolsas-auxilios" routerLinkActive="ativo" class="btn-pilula">
+            CONTROLE ORÇAMENTÁRIO BOLSAS E AUXÍLIOS
           </a>
+          <a routerLink="/siop" routerLinkActive="ativo" class="btn-pilula">SIOP</a>
           @if (auth.ehAdmin()) {
             <a routerLink="/usuarios" routerLinkActive="ativo" class="btn-pilula">USUÁRIOS</a>
           }

@@ -78,11 +78,37 @@ if [ -z "$INST" ]; then
   echo "    Imagem: $IMG"
   printf '%s\n' "$SSH_PUBLIC_KEY" > "$tmp/chave.pub"
 
+  # Quanto do limite gratuito de A1 esta livre (depois do fim do teste a Oracle pode reduzir o limite).
+  livre() {
+    oci limits resource-availability get -c "$T" --service-name compute --limit-name "$1" \
+      --query 'data.available' --raw-output 2>/dev/null || echo "?"
+  }
+  CPU_LIVRE="$(livre standard-a1-core-regional-count)"
+  MEM_LIVRE="$(livre standard-a1-memory-regional-count)"
+  echo "==> Limite A1 livre na conta: $CPU_LIVRE OCPU e $MEM_LIVRE GB"
+  diagnostico() {
+    echo
+    echo "A conta nao tem limite A1 livre para criar a VM. Maquinas que existem na conta (todas as pastas):"
+    oci search resource structured-search \
+      --query-text "query instance resources where lifeCycleState != 'TERMINATED' && lifeCycleState != 'TERMINATING'" \
+      --query 'data.items[*].{nome:"display-name",estado:"lifecycle-state",pasta:"compartment-id"}' --output table || true
+    echo "Envie esta tela para o suporte do RU-CUSTOS."
+    exit 1
+  }
+  if [[ "$CPU_LIVRE" =~ ^[0-9.]+$ && "$MEM_LIVRE" =~ ^[0-9.]+$ ]]; then
+    if awk -v c="$CPU_LIVRE" -v m="$MEM_LIVRE" 'BEGIN { exit !(c < 1 || m < 6) }'; then diagnostico; fi
+  fi
+
   tentativa=0
   while [ -z "$INST" ]; do
     tentativa=$((tentativa + 1))
+    so_limite=1
     for t in "${TAMANHOS[@]}"; do
       set -- $t
+      if [[ "$CPU_LIVRE" =~ ^[0-9.]+$ && "$MEM_LIVRE" =~ ^[0-9.]+$ ]] &&
+         awk -v c="$CPU_LIVRE" -v m="$MEM_LIVRE" -v a="$1" -v b="$2" 'BEGIN { exit !(a > c || b > m) }'; then
+        continue   # tamanho maior que o limite livre
+      fi
       echo "==> Tentativa $tentativa: criando $SHAPE com $1 OCPU e $2 GB"
       if INST="$(oci compute instance launch -c "$T" --availability-domain "$AD" --display-name "$NOME" \
           --shape "$SHAPE" --shape-config "{\"ocpus\":$1,\"memoryInGBs\":$2}" --image-id "$IMG" \
@@ -91,8 +117,15 @@ if [ -z "$INST" ]; then
         break
       fi
       INST=""
-      grep -qi "capacity" "$tmp/erro.txt" && echo "    Sem capacidade neste tamanho." || { cat "$tmp/erro.txt"; exit 1; }
+      if grep -qi "capacity" "$tmp/erro.txt"; then
+        echo "    Sem capacidade neste tamanho."; so_limite=0
+      elif grep -q "LimitExceeded" "$tmp/erro.txt"; then
+        echo "    Acima do limite da conta neste tamanho; tentando menor."
+      else
+        cat "$tmp/erro.txt"; exit 1
+      fi
     done
+    if [ -z "$INST" ] && [ "$so_limite" = 1 ]; then diagnostico; fi
     if [ -z "$INST" ]; then
       echo "    A Oracle esta sem capacidade de A1 agora. Tentando de novo em 60 s (Ctrl+C para parar)..."
       sleep 60

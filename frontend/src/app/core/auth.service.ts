@@ -12,6 +12,11 @@ export interface Usuario {
   email: string;
   perfil: PerfilUsuario;
   ativo: boolean;
+  matricula?: string | null;
+  cargo?: string | null;
+  setor?: string | null;
+  telefone?: string | null;
+  criadoEm?: string | null;
 }
 
 interface LoginResponse {

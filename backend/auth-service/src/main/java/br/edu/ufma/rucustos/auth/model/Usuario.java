@@ -38,6 +38,12 @@ public class Usuario {
 
     private boolean ativo = true;
 
+    // Dados complementares (opcionais), preenchidos pelo ADMIN na tela de usuarios.
+    private String matricula;
+    private String cargo;
+    private String setor;
+    private String telefone;
+
     @Column(name = "criado_em")
     private LocalDateTime criadoEm = LocalDateTime.now();
 
@@ -95,5 +101,37 @@ public class Usuario {
 
     public void setCriadoEm(LocalDateTime criadoEm) {
         this.criadoEm = criadoEm;
+    }
+
+    public String getMatricula() {
+        return matricula;
+    }
+
+    public void setMatricula(String matricula) {
+        this.matricula = matricula;
+    }
+
+    public String getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
+    }
+
+    public String getSetor() {
+        return setor;
+    }
+
+    public void setSetor(String setor) {
+        this.setor = setor;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
     }
 }
